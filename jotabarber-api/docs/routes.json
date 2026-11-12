@@ -1,0 +1,1102 @@
+[
+  {
+    "method": "POST",
+    "path": "auth/login",
+    "controller": "AuthController",
+    "action": "login",
+    "permission": null,
+    "own": false,
+    "resource": null,
+    "auth": false
+  },
+  {
+    "method": "POST",
+    "path": "auth/token",
+    "controller": "AuthController",
+    "action": "token",
+    "permission": null,
+    "own": false,
+    "resource": null,
+    "auth": false
+  },
+  {
+    "method": "GET",
+    "path": "auth/me",
+    "controller": "AuthController",
+    "action": "me",
+    "permission": null,
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "auth/branches",
+    "controller": "AuthController",
+    "action": "branches",
+    "permission": null,
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "auth/branch",
+    "controller": "AuthController",
+    "action": "selectBranch",
+    "permission": null,
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "auth/logout",
+    "controller": "AuthController",
+    "action": "logout",
+    "permission": null,
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "auth/menu",
+    "controller": "AuthController",
+    "action": "menu",
+    "permission": "@branch",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "branches",
+    "controller": "AccessController",
+    "action": "branches",
+    "permission": "branches.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "branches",
+    "controller": "AccessController",
+    "action": "createBranch",
+    "permission": "branches.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "branches/{id}",
+    "controller": "AccessController",
+    "action": "updateBranch",
+    "permission": "branches.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "users",
+    "controller": "AccessController",
+    "action": "users",
+    "permission": "users.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "users",
+    "controller": "AccessController",
+    "action": "createUser",
+    "permission": "users.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "users/{id}",
+    "controller": "AccessController",
+    "action": "updateUser",
+    "permission": "users.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "user-branches",
+    "controller": "AccessController",
+    "action": "assignUser",
+    "permission": "users.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "roles",
+    "controller": "AccessController",
+    "action": "roles",
+    "permission": "roles.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "permissions",
+    "controller": "AccessController",
+    "action": "permissions",
+    "permission": "roles.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "menus",
+    "controller": "AccessController",
+    "action": "menus",
+    "permission": "roles.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "menus/{id}",
+    "controller": "AccessController",
+    "action": "updateMenu",
+    "permission": "roles.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "roles",
+    "controller": "AccessController",
+    "action": "saveRole",
+    "permission": "roles.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "roles/{id}",
+    "controller": "AccessController",
+    "action": "saveRole",
+    "permission": "roles.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "customers",
+    "controller": "CatalogController",
+    "action": "index",
+    "permission": "customers.view",
+    "own": false,
+    "resource": "customers",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "customers/{id}",
+    "controller": "CatalogController",
+    "action": "show",
+    "permission": "customers.view",
+    "own": false,
+    "resource": "customers",
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "customers",
+    "controller": "CatalogController",
+    "action": "store",
+    "permission": "customers.manage",
+    "own": false,
+    "resource": "customers",
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "customers/{id}",
+    "controller": "CatalogController",
+    "action": "update",
+    "permission": "customers.manage",
+    "own": false,
+    "resource": "customers",
+    "auth": true
+  },
+  {
+    "method": "DELETE",
+    "path": "customers/{id}",
+    "controller": "CatalogController",
+    "action": "destroy",
+    "permission": "customers.manage",
+    "own": false,
+    "resource": "customers",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "service-categories",
+    "controller": "CatalogController",
+    "action": "index",
+    "permission": "services.view",
+    "own": false,
+    "resource": "service-categories",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "service-categories/{id}",
+    "controller": "CatalogController",
+    "action": "show",
+    "permission": "services.view",
+    "own": false,
+    "resource": "service-categories",
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "service-categories",
+    "controller": "CatalogController",
+    "action": "store",
+    "permission": "services.manage",
+    "own": false,
+    "resource": "service-categories",
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "service-categories/{id}",
+    "controller": "CatalogController",
+    "action": "update",
+    "permission": "services.manage",
+    "own": false,
+    "resource": "service-categories",
+    "auth": true
+  },
+  {
+    "method": "DELETE",
+    "path": "service-categories/{id}",
+    "controller": "CatalogController",
+    "action": "destroy",
+    "permission": "services.manage",
+    "own": false,
+    "resource": "service-categories",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "services",
+    "controller": "CatalogController",
+    "action": "index",
+    "permission": "services.view",
+    "own": false,
+    "resource": "services",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "services/{id}",
+    "controller": "CatalogController",
+    "action": "show",
+    "permission": "services.view",
+    "own": false,
+    "resource": "services",
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "services",
+    "controller": "CatalogController",
+    "action": "store",
+    "permission": "services.manage",
+    "own": false,
+    "resource": "services",
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "services/{id}",
+    "controller": "CatalogController",
+    "action": "update",
+    "permission": "services.manage",
+    "own": false,
+    "resource": "services",
+    "auth": true
+  },
+  {
+    "method": "DELETE",
+    "path": "services/{id}",
+    "controller": "CatalogController",
+    "action": "destroy",
+    "permission": "services.manage",
+    "own": false,
+    "resource": "services",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "product-categories",
+    "controller": "CatalogController",
+    "action": "index",
+    "permission": "products.view",
+    "own": false,
+    "resource": "product-categories",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "product-categories/{id}",
+    "controller": "CatalogController",
+    "action": "show",
+    "permission": "products.view",
+    "own": false,
+    "resource": "product-categories",
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "product-categories",
+    "controller": "CatalogController",
+    "action": "store",
+    "permission": "products.manage",
+    "own": false,
+    "resource": "product-categories",
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "product-categories/{id}",
+    "controller": "CatalogController",
+    "action": "update",
+    "permission": "products.manage",
+    "own": false,
+    "resource": "product-categories",
+    "auth": true
+  },
+  {
+    "method": "DELETE",
+    "path": "product-categories/{id}",
+    "controller": "CatalogController",
+    "action": "destroy",
+    "permission": "products.manage",
+    "own": false,
+    "resource": "product-categories",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "products",
+    "controller": "CatalogController",
+    "action": "index",
+    "permission": "products.view",
+    "own": false,
+    "resource": "products",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "products/{id}",
+    "controller": "CatalogController",
+    "action": "show",
+    "permission": "products.view",
+    "own": false,
+    "resource": "products",
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "products",
+    "controller": "CatalogController",
+    "action": "store",
+    "permission": "products.manage",
+    "own": false,
+    "resource": "products",
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "products/{id}",
+    "controller": "CatalogController",
+    "action": "update",
+    "permission": "products.manage",
+    "own": false,
+    "resource": "products",
+    "auth": true
+  },
+  {
+    "method": "DELETE",
+    "path": "products/{id}",
+    "controller": "CatalogController",
+    "action": "destroy",
+    "permission": "products.manage",
+    "own": false,
+    "resource": "products",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "expense-categories",
+    "controller": "CatalogController",
+    "action": "index",
+    "permission": "expenses.view",
+    "own": false,
+    "resource": "expense-categories",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "expense-categories/{id}",
+    "controller": "CatalogController",
+    "action": "show",
+    "permission": "expenses.view",
+    "own": false,
+    "resource": "expense-categories",
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "expense-categories",
+    "controller": "CatalogController",
+    "action": "store",
+    "permission": "expenses.manage",
+    "own": false,
+    "resource": "expense-categories",
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "expense-categories/{id}",
+    "controller": "CatalogController",
+    "action": "update",
+    "permission": "expenses.manage",
+    "own": false,
+    "resource": "expense-categories",
+    "auth": true
+  },
+  {
+    "method": "DELETE",
+    "path": "expense-categories/{id}",
+    "controller": "CatalogController",
+    "action": "destroy",
+    "permission": "expenses.manage",
+    "own": false,
+    "resource": "expense-categories",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "cash-registers",
+    "controller": "CatalogController",
+    "action": "index",
+    "permission": "cash.view",
+    "own": false,
+    "resource": "cash-registers",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "cash-registers/{id}",
+    "controller": "CatalogController",
+    "action": "show",
+    "permission": "cash.view",
+    "own": false,
+    "resource": "cash-registers",
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "cash-registers",
+    "controller": "CatalogController",
+    "action": "store",
+    "permission": "cash.manage",
+    "own": false,
+    "resource": "cash-registers",
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "cash-registers/{id}",
+    "controller": "CatalogController",
+    "action": "update",
+    "permission": "cash.manage",
+    "own": false,
+    "resource": "cash-registers",
+    "auth": true
+  },
+  {
+    "method": "DELETE",
+    "path": "cash-registers/{id}",
+    "controller": "CatalogController",
+    "action": "destroy",
+    "permission": "cash.manage",
+    "own": false,
+    "resource": "cash-registers",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "payment-methods",
+    "controller": "CatalogController",
+    "action": "index",
+    "permission": "cash.view",
+    "own": false,
+    "resource": "payment-methods",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "payment-methods/{id}",
+    "controller": "CatalogController",
+    "action": "show",
+    "permission": "cash.view",
+    "own": false,
+    "resource": "payment-methods",
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "payment-methods",
+    "controller": "CatalogController",
+    "action": "store",
+    "permission": "roles.manage",
+    "own": false,
+    "resource": "payment-methods",
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "payment-methods/{id}",
+    "controller": "CatalogController",
+    "action": "update",
+    "permission": "roles.manage",
+    "own": false,
+    "resource": "payment-methods",
+    "auth": true
+  },
+  {
+    "method": "DELETE",
+    "path": "payment-methods/{id}",
+    "controller": "CatalogController",
+    "action": "destroy",
+    "permission": "roles.manage",
+    "own": false,
+    "resource": "payment-methods",
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "employees",
+    "controller": "EmployeeController",
+    "action": "index",
+    "permission": "employees.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "employees/directory",
+    "controller": "EmployeeController",
+    "action": "directory",
+    "permission": "users.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "employees",
+    "controller": "EmployeeController",
+    "action": "store",
+    "permission": "employees.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "employees/{id}",
+    "controller": "EmployeeController",
+    "action": "show",
+    "permission": "employees.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "employees/{id}",
+    "controller": "EmployeeController",
+    "action": "update",
+    "permission": "employees.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "DELETE",
+    "path": "employees/{id}",
+    "controller": "EmployeeController",
+    "action": "destroy",
+    "permission": "employees.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "employee-branches",
+    "controller": "EmployeeController",
+    "action": "assign",
+    "permission": "users.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "branch-services",
+    "controller": "BranchCatalogController",
+    "action": "services",
+    "permission": "services.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "branch-services",
+    "controller": "BranchCatalogController",
+    "action": "saveService",
+    "permission": "services.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "branch-products",
+    "controller": "BranchCatalogController",
+    "action": "products",
+    "permission": "products.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "branch-products",
+    "controller": "BranchCatalogController",
+    "action": "saveProduct",
+    "permission": "products.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "barber-service-rates",
+    "controller": "BranchCatalogController",
+    "action": "rates",
+    "permission": "services.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "barber-service-rates",
+    "controller": "BranchCatalogController",
+    "action": "saveRate",
+    "permission": "services.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "barber-schedules",
+    "controller": "ScheduleController",
+    "action": "schedules",
+    "permission": "employees.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "barber-schedules",
+    "controller": "ScheduleController",
+    "action": "createSchedule",
+    "permission": "employees.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "DELETE",
+    "path": "barber-schedules/{id}",
+    "controller": "ScheduleController",
+    "action": "deleteSchedule",
+    "permission": "employees.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "barber-time-off",
+    "controller": "ScheduleController",
+    "action": "timeOff",
+    "permission": "employees.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "barber-time-off",
+    "controller": "ScheduleController",
+    "action": "createTimeOff",
+    "permission": "employees.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "DELETE",
+    "path": "barber-time-off/{id}",
+    "controller": "ScheduleController",
+    "action": "deleteTimeOff",
+    "permission": "employees.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "appointments",
+    "controller": "AppointmentController",
+    "action": "index",
+    "permission": "appointments.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "appointments/{id}",
+    "controller": "AppointmentController",
+    "action": "show",
+    "permission": "appointments.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "appointments",
+    "controller": "AppointmentController",
+    "action": "store",
+    "permission": "appointments.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "PUT",
+    "path": "appointments/{id}",
+    "controller": "AppointmentController",
+    "action": "update",
+    "permission": "appointments.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "PATCH",
+    "path": "appointments/{id}/status",
+    "controller": "AppointmentController",
+    "action": "changeStatus",
+    "permission": "appointments.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "my-appointments",
+    "controller": "AppointmentController",
+    "action": "index",
+    "permission": "appointments.view_own",
+    "own": true,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "my-appointments/{id}",
+    "controller": "AppointmentController",
+    "action": "show",
+    "permission": "appointments.view_own",
+    "own": true,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "sales",
+    "controller": "SaleController",
+    "action": "index",
+    "permission": "sales.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "sales/{id}",
+    "controller": "SaleController",
+    "action": "show",
+    "permission": "sales.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "sales",
+    "controller": "SaleController",
+    "action": "store",
+    "permission": "sales.create",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "sales/{id}/payments",
+    "controller": "SaleController",
+    "action": "payment",
+    "permission": "sales.create",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "sales/{id}/cancel",
+    "controller": "SaleController",
+    "action": "cancel",
+    "permission": "sales.cancel",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "inventory-movements",
+    "controller": "InventoryController",
+    "action": "index",
+    "permission": "inventory.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "inventory-movements",
+    "controller": "InventoryController",
+    "action": "store",
+    "permission": "inventory.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "cash-sessions",
+    "controller": "CashController",
+    "action": "index",
+    "permission": "cash.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "cash-sessions/{id}",
+    "controller": "CashController",
+    "action": "show",
+    "permission": "cash.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "cash-sessions",
+    "controller": "CashController",
+    "action": "open",
+    "permission": "cash.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "cash-sessions/{id}/close",
+    "controller": "CashController",
+    "action": "close",
+    "permission": "cash.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "expenses",
+    "controller": "ExpenseController",
+    "action": "index",
+    "permission": "expenses.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "expenses/{id}",
+    "controller": "ExpenseController",
+    "action": "show",
+    "permission": "expenses.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "expenses",
+    "controller": "ExpenseController",
+    "action": "store",
+    "permission": "expenses.manage",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "commissions/pending",
+    "controller": "CommissionController",
+    "action": "pending",
+    "permission": "commissions.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "commissions",
+    "controller": "CommissionController",
+    "action": "index",
+    "permission": "commissions.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "commissions/{id}",
+    "controller": "CommissionController",
+    "action": "show",
+    "permission": "commissions.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "my-commissions/pending",
+    "controller": "CommissionController",
+    "action": "pending",
+    "permission": "commissions.view_own",
+    "own": true,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "my-commissions",
+    "controller": "CommissionController",
+    "action": "index",
+    "permission": "commissions.view_own",
+    "own": true,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "my-commissions/{id}",
+    "controller": "CommissionController",
+    "action": "show",
+    "permission": "commissions.view_own",
+    "own": true,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "POST",
+    "path": "commissions",
+    "controller": "CommissionController",
+    "action": "store",
+    "permission": "commissions.pay",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "reports/dashboard",
+    "controller": "ReportController",
+    "action": "dashboard",
+    "permission": "dashboard.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "reports/by-barber",
+    "controller": "ReportController",
+    "action": "byBarber",
+    "permission": "reports.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  },
+  {
+    "method": "GET",
+    "path": "audit-logs",
+    "controller": "ReportController",
+    "action": "audit",
+    "permission": "audit.view",
+    "own": false,
+    "resource": null,
+    "auth": true
+  }
+]

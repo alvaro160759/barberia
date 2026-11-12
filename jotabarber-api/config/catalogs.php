@@ -1,0 +1,11 @@
+<?php
+return [
+'customers'=>['table'=>'customers','search'=>['first_name','last_name','phone'],'rules'=>['first_name'=>'required|string|max:100','last_name'=>'nullable|string|max:100','phone'=>'nullable|string|max:30','email'=>'nullable|email|max:150','document_type'=>'nullable|string|max:20','document_number'=>'nullable|string|max:30','birth_date'=>'nullable|date|before_or_equal:today','notes'=>'nullable|string|max:2000','active'=>'sometimes|boolean']],
+'service-categories'=>['table'=>'service_categories','search'=>['name'],'rules'=>['name'=>'required|string|max:100','active'=>'sometimes|boolean']],
+'services'=>['table'=>'services','search'=>['code','name'],'rules'=>['code'=>'nullable|string|max:30','name'=>'required|string|max:150','description'=>'nullable|string|max:2000','price'=>'sometimes|numeric|min:0','active'=>'sometimes|boolean','commission_percentage'=>'sometimes|numeric|min:0|max:100']],
+'product-categories'=>['table'=>'product_categories','search'=>['name'],'rules'=>['name'=>'required|string|max:100','active'=>'sometimes|boolean']],
+'products'=>['table'=>'products','search'=>['sku','name','barcode'],'rules'=>['category_id'=>'required|integer|exists:product_categories,id','sku'=>'nullable|string|max:60','barcode'=>'nullable|string|max:80','name'=>'required|string|max:150','description'=>'nullable|string|max:2000','unit'=>'required|string|max:20','usage_type'=>'required|in:SALE,INTERNAL,BOTH','active'=>'sometimes|boolean','price'=>'nullable|numeric|min:0','stock'=>'nullable|numeric|min:0','sale_price'=>'nullable|numeric|min:0','stock_qty'=>'nullable|numeric|min:0']],
+'expense-categories'=>['table'=>'expense_categories','search'=>['name'],'rules'=>['name'=>'required|string|max:100','active'=>'sometimes|boolean']],
+'cash-registers'=>['table'=>'cash_registers','branch'=>true,'search'=>['name'],'rules'=>['name'=>'required|string|max:100','active'=>'sometimes|boolean']],
+'payment-methods'=>['table'=>'payment_methods','search'=>['code','name'],'rules'=>['code'=>'required|string|max:30','name'=>'required|string|max:80','active'=>'sometimes|boolean']],
+];

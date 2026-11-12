@@ -1,0 +1,2669 @@
+{
+  "info": {
+    "name": "JOTABARBER API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "110 endpoints. Configura credenciales. Ejecuta auth/token primero. Los IDs capturados son ejemplos; confirma los de tu base. {{$guid}} genera una clave nueva cada envío: para probar reintentos reemplázalo por un UUID fijo."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "username",
+      "value": "admin"
+    },
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "branch_id",
+      "value": "1"
+    },
+    {
+      "key": "payment_method_id",
+      "value": "5"
+    },
+    {
+      "key": "user_id",
+      "value": "1"
+    },
+    {
+      "key": "role_id",
+      "value": "1"
+    },
+    {
+      "key": "menu_id",
+      "value": "1"
+    },
+    {
+      "key": "customer_id",
+      "value": "1"
+    },
+    {
+      "key": "service_id",
+      "value": "1"
+    },
+    {
+      "key": "service_category_id",
+      "value": "1"
+    },
+    {
+      "key": "product_id",
+      "value": "1"
+    },
+    {
+      "key": "product_category_id",
+      "value": "1"
+    },
+    {
+      "key": "barber_id",
+      "value": "1"
+    },
+    {
+      "key": "appointment_id",
+      "value": "1"
+    },
+    {
+      "key": "sale_id",
+      "value": "1"
+    },
+    {
+      "key": "cash_register_id",
+      "value": "1"
+    },
+    {
+      "key": "cash_session_id",
+      "value": "1"
+    },
+    {
+      "key": "expense_id",
+      "value": "1"
+    },
+    {
+      "key": "expense_category_id",
+      "value": "1"
+    },
+    {
+      "key": "settlement_id",
+      "value": "1"
+    },
+    {
+      "key": "schedule_id",
+      "value": "1"
+    },
+    {
+      "key": "time_off_id",
+      "value": "1"
+    },
+    {
+      "key": "sale_service_id",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "POST auth/login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/login",
+            "description": "Permiso: Autenticación",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST auth/token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/token",
+            "description": "Permiso: Autenticación",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) { const d=pm.response.json().data; pm.collectionVariables.set('token',d.token); if(d.branch_id)pm.collectionVariables.set('branch_id',d.branch_id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET auth/me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/me",
+            "description": "Permiso: Autenticación"
+          }
+        },
+        {
+          "name": "GET auth/branches",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/branches",
+            "description": "Permiso: Autenticación"
+          }
+        },
+        {
+          "name": "POST auth/branch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/branch",
+            "description": "Permiso: Autenticación",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branch_id\": {{branch_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST auth/logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/logout",
+            "description": "Permiso: Autenticación",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET auth/menu",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/menu",
+            "description": "Permiso: @branch"
+          }
+        }
+      ]
+    },
+    {
+      "name": "branches",
+      "item": [
+        {
+          "name": "GET branches",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/branches",
+            "description": "Permiso: branches.view"
+          }
+        },
+        {
+          "name": "POST branches",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/branches",
+            "description": "Permiso: branches.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"NORTE\",\n  \"name\": \"Sucursal Norte\",\n  \"timezone\": \"America/Lima\",\n  \"currency\": \"PEN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('branch_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT branches/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/branches/{{branch_id}}",
+            "description": "Permiso: branches.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sucursal Norte\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "GET users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users",
+            "description": "Permiso: users.view"
+          }
+        },
+        {
+          "name": "POST users",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users",
+            "description": "Permiso: users.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Recepción\",\n  \"username\": \"recepcion\",\n  \"password\": \"Cambiar-Password-123\",\n  \"role_ids\": [\n    3\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('user_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT users/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/users/{{user_id}}",
+            "description": "Permiso: users.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Recepción\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "user-branches",
+      "item": [
+        {
+          "name": "POST user-branches",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/user-branches",
+            "description": "Permiso: users.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": {{user_id}},\n  \"role_ids\": [\n    3\n  ],\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "roles",
+      "item": [
+        {
+          "name": "GET roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/roles",
+            "description": "Permiso: roles.view"
+          }
+        },
+        {
+          "name": "POST roles",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/roles",
+            "description": "Permiso: roles.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"custom\",\n  \"name\": \"Rol personalizado\",\n  \"permission_ids\": [\n    1\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('role_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT roles/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/roles/{{role_id}}",
+            "description": "Permiso: roles.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"custom\",\n  \"name\": \"Rol personalizado\",\n  \"permission_ids\": [\n    1\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "permissions",
+      "item": [
+        {
+          "name": "GET permissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/permissions",
+            "description": "Permiso: roles.view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "menus",
+      "item": [
+        {
+          "name": "GET menus",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/menus",
+            "description": "Permiso: roles.view"
+          }
+        },
+        {
+          "name": "PUT menus/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/menus/{{menu_id}}",
+            "description": "Permiso: roles.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Clientes\",\n  \"route\": \"/customers\",\n  \"sort_order\": 60,\n  \"permission_id\": 10,\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "customers",
+      "item": [
+        {
+          "name": "GET customers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/customers",
+            "description": "Permiso: customers.view"
+          }
+        },
+        {
+          "name": "GET customers/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/customers/{{customer_id}}",
+            "description": "Permiso: customers.view"
+          }
+        },
+        {
+          "name": "POST customers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/customers",
+            "description": "Permiso: customers.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Luis\",\n  \"last_name\": \"Torres\",\n  \"phone\": \"999111222\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('customer_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT customers/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/customers/{{customer_id}}",
+            "description": "Permiso: customers.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Luis\",\n  \"last_name\": \"Torres\",\n  \"phone\": \"999111222\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE customers/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/customers/{{customer_id}}",
+            "description": "Permiso: customers.manage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "service-categories",
+      "item": [
+        {
+          "name": "GET service-categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/service-categories",
+            "description": "Permiso: services.view"
+          }
+        },
+        {
+          "name": "GET service-categories/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/service-categories/{{service_category_id}}",
+            "description": "Permiso: services.view"
+          }
+        },
+        {
+          "name": "POST service-categories",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/service-categories",
+            "description": "Permiso: services.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cortes\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('service_category_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT service-categories/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/service-categories/{{service_category_id}}",
+            "description": "Permiso: services.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cortes\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE service-categories/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/service-categories/{{service_category_id}}",
+            "description": "Permiso: services.manage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "services",
+      "item": [
+        {
+          "name": "GET services",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/services",
+            "description": "Permiso: services.view"
+          }
+        },
+        {
+          "name": "GET services/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/services/{{service_id}}",
+            "description": "Permiso: services.view"
+          }
+        },
+        {
+          "name": "POST services",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/services",
+            "description": "Permiso: services.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": {{service_category_id}},\n  \"code\": \"CORTE01\",\n  \"name\": \"Corte clásico\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('service_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT services/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/services/{{service_id}}",
+            "description": "Permiso: services.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": {{service_category_id}},\n  \"code\": \"CORTE01\",\n  \"name\": \"Corte clásico\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE services/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/services/{{service_id}}",
+            "description": "Permiso: services.manage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "product-categories",
+      "item": [
+        {
+          "name": "GET product-categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/product-categories",
+            "description": "Permiso: products.view"
+          }
+        },
+        {
+          "name": "GET product-categories/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/product-categories/{{product_category_id}}",
+            "description": "Permiso: products.view"
+          }
+        },
+        {
+          "name": "POST product-categories",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/product-categories",
+            "description": "Permiso: products.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cuidado capilar\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('product_category_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT product-categories/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/product-categories/{{product_category_id}}",
+            "description": "Permiso: products.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cuidado capilar\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE product-categories/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/product-categories/{{product_category_id}}",
+            "description": "Permiso: products.manage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "products",
+      "item": [
+        {
+          "name": "GET products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/products",
+            "description": "Permiso: products.view"
+          }
+        },
+        {
+          "name": "GET products/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/products/{{product_id}}",
+            "description": "Permiso: products.view"
+          }
+        },
+        {
+          "name": "POST products",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/products",
+            "description": "Permiso: products.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": {{product_category_id}},\n  \"sku\": \"CERA01\",\n  \"name\": \"Cera mate\",\n  \"unit\": \"UND\",\n  \"usage_type\": \"SALE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('product_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT products/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/products/{{product_id}}",
+            "description": "Permiso: products.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": {{product_category_id}},\n  \"sku\": \"CERA01\",\n  \"name\": \"Cera mate\",\n  \"unit\": \"UND\",\n  \"usage_type\": \"SALE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE products/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/products/{{product_id}}",
+            "description": "Permiso: products.manage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "expense-categories",
+      "item": [
+        {
+          "name": "GET expense-categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/expense-categories",
+            "description": "Permiso: expenses.view"
+          }
+        },
+        {
+          "name": "GET expense-categories/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/expense-categories/{{expense_category_id}}",
+            "description": "Permiso: expenses.view"
+          }
+        },
+        {
+          "name": "POST expense-categories",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/expense-categories",
+            "description": "Permiso: expenses.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Limpieza\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('expense_category_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT expense-categories/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/expense-categories/{{expense_category_id}}",
+            "description": "Permiso: expenses.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Limpieza\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE expense-categories/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/expense-categories/{{expense_category_id}}",
+            "description": "Permiso: expenses.manage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "cash-registers",
+      "item": [
+        {
+          "name": "GET cash-registers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/cash-registers",
+            "description": "Permiso: cash.view"
+          }
+        },
+        {
+          "name": "GET cash-registers/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/cash-registers/{{cash_register_id}}",
+            "description": "Permiso: cash.view"
+          }
+        },
+        {
+          "name": "POST cash-registers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/cash-registers",
+            "description": "Permiso: cash.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Caja principal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('cash_register_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT cash-registers/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/cash-registers/{{cash_register_id}}",
+            "description": "Permiso: cash.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Caja principal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE cash-registers/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/cash-registers/{{cash_register_id}}",
+            "description": "Permiso: cash.manage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "payment-methods",
+      "item": [
+        {
+          "name": "GET payment-methods",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/payment-methods",
+            "description": "Permiso: cash.view"
+          }
+        },
+        {
+          "name": "GET payment-methods/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/payment-methods/{{payment_method_id}}",
+            "description": "Permiso: cash.view"
+          }
+        },
+        {
+          "name": "POST payment-methods",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/payment-methods",
+            "description": "Permiso: roles.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"OTHER\",\n  \"name\": \"Otro\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('payment_method_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT payment-methods/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/payment-methods/{{payment_method_id}}",
+            "description": "Permiso: roles.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"OTHER\",\n  \"name\": \"Otro\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE payment-methods/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/payment-methods/{{payment_method_id}}",
+            "description": "Permiso: roles.manage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "employees",
+      "item": [
+        {
+          "name": "GET employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/employees",
+            "description": "Permiso: employees.view"
+          }
+        },
+        {
+          "name": "GET employees/directory",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/employees/directory",
+            "description": "Permiso: users.manage"
+          }
+        },
+        {
+          "name": "POST employees",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/employees",
+            "description": "Permiso: employees.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Pedro\",\n  \"last_name\": \"Pérez\",\n  \"job_type\": \"BARBER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('barber_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET employees/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/employees/{{barber_id}}",
+            "description": "Permiso: employees.view"
+          }
+        },
+        {
+          "name": "PUT employees/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/employees/{{barber_id}}",
+            "description": "Permiso: employees.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Pedro\",\n  \"last_name\": \"Pérez\",\n  \"job_type\": \"BARBER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE employees/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/employees/{{barber_id}}",
+            "description": "Permiso: employees.manage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "employee-branches",
+      "item": [
+        {
+          "name": "POST employee-branches",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/employee-branches",
+            "description": "Permiso: users.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{barber_id}},\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "branch-services",
+      "item": [
+        {
+          "name": "GET branch-services",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/branch-services",
+            "description": "Permiso: services.view"
+          }
+        },
+        {
+          "name": "PUT branch-services",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/branch-services",
+            "description": "Permiso: services.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"service_id\": {{service_id}},\n  \"price\": \"30.00\",\n  \"duration_minutes\": 30,\n  \"barber_percentage\": \"40.00\",\n  \"owner_percentage\": \"60.00\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "branch-products",
+      "item": [
+        {
+          "name": "GET branch-products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/branch-products",
+            "description": "Permiso: products.view"
+          }
+        },
+        {
+          "name": "PUT branch-products",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/branch-products",
+            "description": "Permiso: products.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": {{product_id}},\n  \"sale_price\": \"25.00\",\n  \"minimum_stock\": \"5.000\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "barber-service-rates",
+      "item": [
+        {
+          "name": "GET barber-service-rates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/barber-service-rates",
+            "description": "Permiso: services.view"
+          }
+        },
+        {
+          "name": "PUT barber-service-rates",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/barber-service-rates",
+            "description": "Permiso: services.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{barber_id}},\n  \"service_id\": {{service_id}},\n  \"barber_percentage\": \"45.00\",\n  \"owner_percentage\": \"55.00\",\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "barber-schedules",
+      "item": [
+        {
+          "name": "GET barber-schedules",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/barber-schedules",
+            "description": "Permiso: employees.view"
+          }
+        },
+        {
+          "name": "POST barber-schedules",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/barber-schedules",
+            "description": "Permiso: employees.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{barber_id}},\n  \"weekday\": 1,\n  \"starts_at\": \"09:00:00\",\n  \"ends_at\": \"18:00:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('schedule_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE barber-schedules/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/barber-schedules/{{schedule_id}}",
+            "description": "Permiso: employees.manage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "barber-time-off",
+      "item": [
+        {
+          "name": "GET barber-time-off",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/barber-time-off",
+            "description": "Permiso: employees.view"
+          }
+        },
+        {
+          "name": "POST barber-time-off",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/barber-time-off",
+            "description": "Permiso: employees.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": {{barber_id}},\n  \"starts_at\": \"2026-11-10T12:00:00-05:00\",\n  \"ends_at\": \"2026-11-10T13:00:00-05:00\",\n  \"reason\": \"Descanso\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('time_off_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE barber-time-off/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/barber-time-off/{{time_off_id}}",
+            "description": "Permiso: employees.manage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "appointments",
+      "item": [
+        {
+          "name": "GET appointments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/appointments",
+            "description": "Permiso: appointments.view"
+          }
+        },
+        {
+          "name": "GET appointments/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/appointments/{{appointment_id}}",
+            "description": "Permiso: appointments.view"
+          }
+        },
+        {
+          "name": "POST appointments",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/appointments",
+            "description": "Permiso: appointments.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": {{customer_id}},\n  \"barber_id\": {{barber_id}},\n  \"starts_at\": \"2026-11-09T10:00:00-05:00\",\n  \"service_ids\": [\n    {{service_id}}\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('appointment_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT appointments/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/appointments/{{appointment_id}}",
+            "description": "Permiso: appointments.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": {{customer_id}},\n  \"barber_id\": {{barber_id}},\n  \"starts_at\": \"2026-11-09T10:00:00-05:00\",\n  \"service_ids\": [\n    {{service_id}}\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "PATCH appointments/{id}/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/appointments/{{appointment_id}}/status",
+            "description": "Permiso: appointments.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONFIRMED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "my-appointments",
+      "item": [
+        {
+          "name": "GET my-appointments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/my-appointments",
+            "description": "Permiso: appointments.view_own. Consulta únicamente el barbero autenticado."
+          }
+        },
+        {
+          "name": "GET my-appointments/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/my-appointments/{{appointment_id}}",
+            "description": "Permiso: appointments.view_own. Consulta únicamente el barbero autenticado."
+          }
+        }
+      ]
+    },
+    {
+      "name": "sales",
+      "item": [
+        {
+          "name": "GET sales",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/sales",
+            "description": "Permiso: sales.view"
+          }
+        },
+        {
+          "name": "GET sales/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/sales/{{sale_id}}",
+            "description": "Permiso: sales.view"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code===200){const d=pm.response.json().data;if(d.services?.length)pm.collectionVariables.set('sale_service_id',d.services[0].id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST sales",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/sales",
+            "description": "Permiso: sales.create",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation_key\": \"{{$guid}}\",\n  \"customer_id\": {{customer_id}},\n  \"services\": [\n    {\n      \"service_id\": {{service_id}},\n      \"barber_id\": {{barber_id}},\n      \"quantity\": 1,\n      \"discount_amount\": \"0.00\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('sale_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST sales/{id}/payments",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/sales/{{sale_id}}/payments",
+            "description": "Permiso: sales.create",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation_key\": \"{{$guid}}\",\n  \"payment_method_id\": {{payment_method_id}},\n  \"amount\": \"30.00\",\n  \"reference\": \"Pago transferencia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST sales/{id}/cancel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/sales/{{sale_id}}/cancel",
+            "description": "Permiso: sales.cancel",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Registro incorrecto\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "inventory-movements",
+      "item": [
+        {
+          "name": "GET inventory-movements",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/inventory-movements",
+            "description": "Permiso: inventory.view"
+          }
+        },
+        {
+          "name": "POST inventory-movements",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/inventory-movements",
+            "description": "Permiso: inventory.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation_key\": \"{{$guid}}\",\n  \"product_id\": {{product_id}},\n  \"type\": \"OPENING\",\n  \"quantity\": \"10.000\",\n  \"unit_cost\": \"12.0000\",\n  \"reason\": \"Stock inicial\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "cash-sessions",
+      "item": [
+        {
+          "name": "GET cash-sessions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/cash-sessions",
+            "description": "Permiso: cash.view"
+          }
+        },
+        {
+          "name": "GET cash-sessions/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/cash-sessions/{{cash_session_id}}",
+            "description": "Permiso: cash.view"
+          }
+        },
+        {
+          "name": "POST cash-sessions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/cash-sessions",
+            "description": "Permiso: cash.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cash_register_id\": {{cash_register_id}},\n  \"opening_amount\": \"100.00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('cash_session_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST cash-sessions/{id}/close",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/cash-sessions/{{cash_session_id}}/close",
+            "description": "Permiso: cash.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"counted_amount\": \"100.00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "expenses",
+      "item": [
+        {
+          "name": "GET expenses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/expenses",
+            "description": "Permiso: expenses.view"
+          }
+        },
+        {
+          "name": "GET expenses/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/expenses/{{expense_id}}",
+            "description": "Permiso: expenses.view"
+          }
+        },
+        {
+          "name": "POST expenses",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/expenses",
+            "description": "Permiso: expenses.manage",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation_key\": \"{{$guid}}\",\n  \"category_id\": {{expense_category_id}},\n  \"description\": \"Materiales de limpieza\",\n  \"amount\": \"10.00\",\n  \"payment_method_id\": {{payment_method_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('expense_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "commissions",
+      "item": [
+        {
+          "name": "GET commissions/pending",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/commissions/pending",
+            "description": "Permiso: commissions.view"
+          }
+        },
+        {
+          "name": "GET commissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/commissions",
+            "description": "Permiso: commissions.view"
+          }
+        },
+        {
+          "name": "GET commissions/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/commissions/{{settlement_id}}",
+            "description": "Permiso: commissions.view"
+          }
+        },
+        {
+          "name": "POST commissions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/commissions",
+            "description": "Permiso: commissions.pay",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation_key\": \"{{$guid}}\",\n  \"barber_id\": {{barber_id}},\n  \"period_start\": \"2026-10-01\",\n  \"period_end\": \"2026-12-31\",\n  \"sale_service_ids\": [\n    {{sale_service_id}}\n  ],\n  \"payment_method_id\": {{payment_method_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code>=200 && pm.response.code<300){const d=pm.response.json().data;if(d?.id)pm.collectionVariables.set('settlement_id',d.id);}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "my-commissions",
+      "item": [
+        {
+          "name": "GET my-commissions/pending",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/my-commissions/pending",
+            "description": "Permiso: commissions.view_own. Consulta únicamente el barbero autenticado."
+          }
+        },
+        {
+          "name": "GET my-commissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/my-commissions",
+            "description": "Permiso: commissions.view_own. Consulta únicamente el barbero autenticado."
+          }
+        },
+        {
+          "name": "GET my-commissions/{id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/my-commissions/{{settlement_id}}",
+            "description": "Permiso: commissions.view_own. Consulta únicamente el barbero autenticado."
+          }
+        }
+      ]
+    },
+    {
+      "name": "reports",
+      "item": [
+        {
+          "name": "GET reports/dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/reports/dashboard?from=2026-10-01&to=2026-10-31",
+            "description": "Permiso: dashboard.view"
+          }
+        },
+        {
+          "name": "GET reports/by-barber",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/reports/by-barber?from=2026-10-01&to=2026-10-31",
+            "description": "Permiso: reports.view"
+          }
+        }
+      ]
+    },
+    {
+      "name": "audit-logs",
+      "item": [
+        {
+          "name": "GET audit-logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/audit-logs",
+            "description": "Permiso: audit.view"
+          }
+        }
+      ]
+    }
+  ]
+}

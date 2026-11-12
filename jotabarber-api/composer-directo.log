@@ -1,0 +1,153 @@
+Running 2.10.3 (2026-08-27 13:34:23) with PHP 8.3.30 on Windows NT / 10.0
+Reading ./composer.json (C:\xampp_lite\www\jotabarber-api\composer.json)
+Loading config file ./composer.json (C:\xampp_lite\www\jotabarber-api\composer.json)
+Checked CA file /apps/php/extras/ssl/curl-ca-bundle.crt does not exist or it is not a file.
+Checked directory /apps/php/extras/ssl/curl-ca-bundle.crt does not exist or it is not a directory.
+Checked CA file /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem does not exist or it is not a file.
+Checked directory /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem does not exist or it is not a directory.
+Checked CA file /etc/pki/tls/certs/ca-bundle.crt does not exist or it is not a file.
+Checked directory /etc/pki/tls/certs/ca-bundle.crt does not exist or it is not a directory.
+Checked CA file /etc/ssl/certs/ca-certificates.crt does not exist or it is not a file.
+Checked directory /etc/ssl/certs/ca-certificates.crt does not exist or it is not a directory.
+Checked CA file /etc/ssl/ca-bundle.pem does not exist or it is not a file.
+Checked directory /etc/ssl/ca-bundle.pem does not exist or it is not a directory.
+Checked CA file /usr/ssl/certs/ca-bundle.crt does not exist or it is not a file.
+Checked directory /usr/ssl/certs/ca-bundle.crt does not exist or it is not a directory.
+Checked CA file /opt/local/share/curl/curl-ca-bundle.crt does not exist or it is not a file.
+Checked directory /opt/local/share/curl/curl-ca-bundle.crt does not exist or it is not a directory.
+Checked CA file /usr/local/share/curl/curl-ca-bundle.crt does not exist or it is not a file.
+Checked directory /usr/local/share/curl/curl-ca-bundle.crt does not exist or it is not a directory.
+Checked CA file /usr/share/ssl/certs/ca-bundle.crt does not exist or it is not a file.
+Checked directory /usr/share/ssl/certs/ca-bundle.crt does not exist or it is not a directory.
+Checked CA file /etc/ssl/cert.pem does not exist or it is not a file.
+Checked directory /etc/ssl/cert.pem does not exist or it is not a directory.
+Checked CA file /usr/local/etc/openssl/cert.pem does not exist or it is not a file.
+Checked directory /usr/local/etc/openssl/cert.pem does not exist or it is not a directory.
+Checked CA file /usr/local/etc/openssl@1.1/cert.pem does not exist or it is not a file.
+Checked directory /usr/local/etc/openssl@1.1/cert.pem does not exist or it is not a directory.
+Checked CA file /opt/homebrew/etc/openssl@3/cert.pem does not exist or it is not a file.
+Checked directory /opt/homebrew/etc/openssl@3/cert.pem does not exist or it is not a directory.
+Checked CA file /opt/homebrew/etc/openssl@1.1/cert.pem does not exist or it is not a file.
+Checked directory /opt/homebrew/etc/openssl@1.1/cert.pem does not exist or it is not a directory.
+Checked CA file /etc/pki/tls/certs does not exist or it is not a file.
+Checked directory /etc/pki/tls/certs does not exist or it is not a directory.
+Checked CA file /etc/ssl/certs does not exist or it is not a file.
+Checked directory /etc/ssl/certs does not exist or it is not a directory.
+Checked CA file C:\Users\sopor\AppData\Local\Temp\ope7DEA.tmp: valid
+Executing command (CWD): git --version
+Executing command (C:\xampp_lite\www\jotabarber-api): git branch -a --no-color --no-abbrev -v
+Executing command (C:\xampp_lite\www\jotabarber-api): git describe --exact-match --tags
+Executing command (C:\xampp_lite\www\jotabarber-api): git rev-list --no-commit-header --format=%H -n1 HEAD --no-show-signature
+Executing command (C:\xampp_lite\www\jotabarber-api): hg branch
+Executing command (C:\xampp_lite\www\jotabarber-api): fossil branch list
+Executing command (C:\xampp_lite\www\jotabarber-api): fossil tag list
+Executing command (C:\xampp_lite\www\jotabarber-api): svn info --xml
+Reading C:/Users/sopor/AppData/Roaming/Composer/composer.json (C:\Users\sopor\AppData\Roaming\Composer\composer.json)
+Loading config file C:/Users/sopor/AppData/Roaming/Composer/composer.json (C:\Users\sopor\AppData\Roaming\Composer\composer.json)
+Reading C:/Users/sopor/AppData/Roaming/Composer/vendor/composer/installed.json (C:\Users\sopor\AppData\Roaming\Composer\vendor\composer\installed.json)
+No composer.lock file present. Updating dependencies to latest instead of installing from lock file. See https://getcomposer.org/install for more information.
+Loading composer repositories with package information
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/packages.json from cache
+Downloading https://repo.packagist.org/packages.json if modified
+[200] https://repo.packagist.org/packages.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/packages.json into cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-laravel~framework.json from cache
+Downloading https://repo.packagist.org/p2/laravel/framework.json if modified
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-laravel~sanctum.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-phpunit~phpunit.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-mockery~mockery.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-nunomaduro~collision.json from cache
+[200] https://repo.packagist.org/p2/laravel/framework.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-laravel~framework.json into cache
+Downloading https://repo.packagist.org/p2/laravel/sanctum.json if modified
+[200] https://repo.packagist.org/p2/laravel/sanctum.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-laravel~sanctum.json into cache
+Downloading https://repo.packagist.org/p2/phpunit/phpunit.json if modified
+[200] https://repo.packagist.org/p2/phpunit/phpunit.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-phpunit~phpunit.json into cache
+Downloading https://repo.packagist.org/p2/mockery/mockery.json if modified
+[200] https://repo.packagist.org/p2/mockery/mockery.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-mockery~mockery.json into cache
+Downloading https://repo.packagist.org/p2/nunomaduro/collision.json if modified
+[200] https://repo.packagist.org/p2/nunomaduro/collision.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-nunomaduro~collision.json into cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-brick~math.json from cache
+Downloading https://repo.packagist.org/p2/brick/math.json if modified
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-doctrine~inflector.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-dragonmantank~cron-expression.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-egulias~email-validator.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-fruitcake~php-cors.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-guzzlehttp~guzzle.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-guzzlehttp~promises.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-guzzlehttp~psr7.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-guzzlehttp~uri-template.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-laravel~prompts.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-laravel~serializable-closure.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-league~commonmark.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-league~flysystem.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-league~flysystem-local.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-league~uri.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-monolog~monolog.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-nesbot~carbon.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-nunomaduro~termwind.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-psr~container.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-psr~http-message.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-psr~log.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-psr~simple-cache.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-ramsey~uuid.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~console.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~error-handler.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~finder.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~http-foundation.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~http-kernel.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~mailer.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~mime.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~polyfill-php84.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~polyfill-php85.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~polyfill-php86.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~process.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~routing.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~uid.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-symfony~var-dumper.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-tijsverkoyen~css-to-inline-styles.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-vlucas~phpdotenv.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-voku~portable-ascii.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-illuminate~console.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-illuminate~contracts.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-illuminate~database.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-illuminate~support.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-myclabs~deep-copy.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-phar-io~manifest.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-phar-io~version.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-phpunit~php-code-coverage.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-phpunit~php-file-iterator.json from cache
+Reading C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-phpunit~php-invoker.json from cache
+[200] https://repo.packagist.org/p2/brick/math.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-brick~math.json into cache
+Downloading https://repo.packagist.org/p2/doctrine/inflector.json if modified
+[200] https://repo.packagist.org/p2/doctrine/inflector.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-doctrine~inflector.json into cache
+Downloading https://repo.packagist.org/p2/dragonmantank/cron-expression.json if modified
+[200] https://repo.packagist.org/p2/dragonmantank/cron-expression.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-dragonmantank~cron-expression.json into cache
+Downloading https://repo.packagist.org/p2/egulias/email-validator.json if modified
+[200] https://repo.packagist.org/p2/egulias/email-validator.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-egulias~email-validator.json into cache
+Downloading https://repo.packagist.org/p2/fruitcake/php-cors.json if modified
+[200] https://repo.packagist.org/p2/fruitcake/php-cors.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-fruitcake~php-cors.json into cache
+Downloading https://repo.packagist.org/p2/guzzlehttp/guzzle.json if modified
+[200] https://repo.packagist.org/p2/guzzlehttp/guzzle.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-guzzlehttp~guzzle.json into cache
+Downloading https://repo.packagist.org/p2/guzzlehttp/promises.json if modified
+[200] https://repo.packagist.org/p2/guzzlehttp/promises.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-guzzlehttp~promises.json into cache
+Downloading https://repo.packagist.org/p2/guzzlehttp/psr7.json if modified
+[200] https://repo.packagist.org/p2/guzzlehttp/psr7.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-guzzlehttp~psr7.json into cache
+Downloading https://repo.packagist.org/p2/guzzlehttp/uri-template.json if modified
+[200] https://repo.packagist.org/p2/guzzlehttp/uri-template.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-guzzlehttp~uri-template.json into cache
+Downloading https://repo.packagist.org/p2/laravel/prompts.json if modified
+[200] https://repo.packagist.org/p2/laravel/prompts.json
+Writing C:/Users/sopor/AppData/Local/Composer/repo/https---repo.packagist.org/provider-laravel~prompts.json into cache
