@@ -1,8 +1,11 @@
 import { Container } from '@mui/material';
+
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+
 import { useSettingsContext } from 'src/components/settings';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
 import { ProductNewEditForm } from './product-new-edit-form';
 
 export function ProductCreateView() {

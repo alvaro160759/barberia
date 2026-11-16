@@ -1,4 +1,4 @@
-import { Avatar, Card, Paper, Stack, Typography } from '@mui/material';
+import { Card, Paper, Stack, Avatar, Typography } from '@mui/material';
 
 export function BarberSelectionCard({ employees, selectedBarber, setSelectedBarber }) {
   const barbers = employees.filter(emp => emp.job_type === 'BARBER');

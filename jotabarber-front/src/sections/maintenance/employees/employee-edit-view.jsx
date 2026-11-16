@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
+
 import { Container } from '@mui/material';
+
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hooks';
-import { useSettingsContext } from 'src/components/settings';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { SplashScreen } from 'src/components/loading-screen';
+
 import { employeesApi } from 'src/actions/employees';
+
+import { useSettingsContext } from 'src/components/settings';
+import { SplashScreen } from 'src/components/loading-screen';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
 import { EmployeeNewEditForm } from './employee-new-edit-form';
 
 export function EmployeeEditView() {

@@ -6,19 +6,40 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class AppointmentController extends Controller {
     public function index(Request $r) {
-        $q=DB::table('appointments')->where('branch_id',$this->branch($r));
-        if($r->route('own'))$q->where('barber_id',Access::barber($this->user($r),$this->branch($r)));
-        elseif($r->filled('barber_id'))$q->where('barber_id',(int)$r->query('barber_id'));
-        if($r->filled('status'))$q->where('status',$r->query('status'));
+        $branch=$this->branch($r);
+        $zone=DB::table('branches')->where('id',$branch)->value('timezone')??'UTC';
+        $q=DB::table('appointments as a')
+            ->leftJoin('customers as c','c.id','=','a.customer_id')
+            ->leftJoin('employees as e','e.id','=','a.barber_id')
+            ->where('a.branch_id',$branch)
+            ->select('a.*','c.first_name as customer_first_name','c.last_name as customer_last_name','c.phone as customer_phone','e.first_name as barber_first_name','e.last_name as barber_last_name');
+        if($r->route('own'))$q->where('a.barber_id',Access::barber($this->user($r),$branch));
+        elseif($r->filled('barber_id'))$q->where('a.barber_id',(int)$r->query('barber_id'));
+        if($r->filled('status'))$q->where('a.status',$r->query('status'));
         $dates=$r->validate(['from'=>'sometimes|date','to'=>'sometimes|date|after:from']);
-        if(isset($dates['from']))$q->where('starts_at','>=',\Carbon\CarbonImmutable::parse($dates['from'])->utc());
-        if(isset($dates['to']))$q->where('starts_at','<',\Carbon\CarbonImmutable::parse($dates['to'])->utc());
-        return Api::ok($q->orderBy('starts_at')->paginate($this->perPage($r)));
+        if(isset($dates['from']))$q->where('a.starts_at','>=',\Carbon\CarbonImmutable::parse($dates['from'],$zone)->startOfDay()->utc());
+        if(isset($dates['to']))$q->where('a.starts_at','<',\Carbon\CarbonImmutable::parse($dates['to'],$zone)->addDay()->startOfDay()->utc());
+        $paginator=$q->orderBy('a.starts_at')->paginate($this->perPage($r));
+        $paginator->getCollection()->transform(function($row)use($zone){
+            $row->starts_local=\Carbon\CarbonImmutable::parse($row->starts_at,'UTC')->setTimezone($zone)->format('Y-m-d H:i');
+            $row->ends_local=\Carbon\CarbonImmutable::parse($row->ends_at,'UTC')->setTimezone($zone)->format('H:i');
+            return $row;
+        });
+        return Api::ok($paginator);
     }
     public function show(Request $r) {
-        $q=DB::table('appointments')->where('branch_id',$this->branch($r))->where('id',$r->route('id'));
-        if($r->route('own'))$q->where('barber_id',Access::barber($this->user($r),$this->branch($r)));
-        $row=$q->first();abort_unless($row,404);$row->services=DB::table('appointment_services')->where('appointment_id',$row->id)->get();return Api::ok($row);
+        $branch=$this->branch($r);
+        $zone=DB::table('branches')->where('id',$branch)->value('timezone')??'UTC';
+        $q=DB::table('appointments as a')
+            ->leftJoin('customers as c','c.id','=','a.customer_id')
+            ->leftJoin('employees as e','e.id','=','a.barber_id')
+            ->where('a.branch_id',$branch)->where('a.id',$r->route('id'))
+            ->select('a.*','c.first_name as customer_first_name','c.last_name as customer_last_name','c.phone as customer_phone','c.email as customer_email','e.first_name as barber_first_name','e.last_name as barber_last_name');
+        if($r->route('own'))$q->where('a.barber_id',Access::barber($this->user($r),$branch));
+        $row=$q->first();abort_unless($row,404);
+        $row->starts_local=\Carbon\CarbonImmutable::parse($row->starts_at,'UTC')->setTimezone($zone)->format('Y-m-d H:i');
+        $row->ends_local=\Carbon\CarbonImmutable::parse($row->ends_at,'UTC')->setTimezone($zone)->format('H:i');
+        $row->services=DB::table('appointment_services')->where('appointment_id',$row->id)->get();return Api::ok($row);
     }
     public function store(Request $r,SaveAppointment $action) {return $this->save($r,$action,null);}
     public function update(Request $r,SaveAppointment $action) {return $this->save($r,$action,(int)$r->route('id'));}

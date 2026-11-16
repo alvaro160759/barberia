@@ -1,6 +1,8 @@
-import { Box, Button, Card, Stack, TextField, Typography, IconButton } from '@mui/material';
+import { Box, Card, Stack, Button, TextField, Typography, IconButton } from '@mui/material';
+
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+
 import { Iconify } from 'src/components/iconify';
 
 export function ClientSelectionCard({ selectedClient, setSelectedClient, clientSearch, setClientSearch }) {

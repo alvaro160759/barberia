@@ -23,6 +23,7 @@ export const paths = {
   about: '/about-us',
   contact: '/contact-us',
   faqs: '/faqs',
+  reserva: '/reserva',
   page403: '/error/403',
   page404: '/error/404',
   page500: '/error/500',
@@ -156,6 +157,9 @@ export const paths = {
     },
     sales: {
       serviceRegistration: `${ROOTS.DASHBOARD}/sales/service-registration`,
+    },
+    appointments: {
+      root: `${ROOTS.DASHBOARD}/appointments`,
     },
     general: {
       app: `${ROOTS.DASHBOARD}/app`,

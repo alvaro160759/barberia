@@ -5,11 +5,11 @@ import { Container } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hooks';
 
-import { useSettingsContext } from 'src/components/settings';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { SplashScreen } from 'src/components/loading-screen';
-
 import { useRoles } from 'src/hooks/use-roles';
+
+import { useSettingsContext } from 'src/components/settings';
+import { SplashScreen } from 'src/components/loading-screen';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { RoleNewEditForm } from './role-new-edit-form';
 

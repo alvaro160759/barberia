@@ -1,8 +1,11 @@
 import { Container } from '@mui/material';
+
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+
 import { useSettingsContext } from 'src/components/settings';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
 import { ServiceNewEditForm } from './service-new-edit-form';
 
 export function ServiceCreateView() {

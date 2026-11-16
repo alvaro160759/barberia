@@ -1,4 +1,4 @@
-import { Box, Button, Card, Divider, Stack, TextField, Typography } from '@mui/material';
+import { Box, Card, Stack, Button, Divider, TextField, Typography } from '@mui/material';
 
 export function SummaryCard({ addedServices, discountPercent, setDiscountPercent, discountAmount, setDiscountAmount, paymentMethod, setPaymentMethod, notes, setNotes, onRegisterService, onCancel }) {
   const subtotal = addedServices.reduce((sum, service) => {

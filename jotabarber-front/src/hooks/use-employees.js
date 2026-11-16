@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
+
 import { employeesApi } from 'src/actions/employees';
+
 import { toast } from 'src/components/snackbar';
 
 export function useEmployees() {
@@ -54,7 +56,7 @@ export function useEmployees() {
       
       if (err.errors) {
         // Si es un error de validación de Laravel, mostrar primero
-        const errors = err.errors;
+        const {errors} = err;
         const firstError = Object.values(errors)[0];
         toast.error(firstError);
       } else if (err.message) {
@@ -79,7 +81,7 @@ export function useEmployees() {
       // Manejar diferentes formatos de error
       if (err.errors) {
         // Si es un error de validación de Laravel, mostrar primero
-        const errors = err.errors;
+        const {errors} = err;
         const firstError = Object.values(errors)[0];
         toast.error(firstError);
       } else if (err.message) {

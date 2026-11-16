@@ -5,13 +5,13 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -20,7 +20,6 @@ import { useUsers } from 'src/hooks/use-users';
 import { useRoles } from 'src/hooks/use-roles';
 import { useBranches } from 'src/hooks/use-branches';
 
-import { toast } from 'src/components/snackbar';
 import { useSettingsContext } from 'src/components/settings';
 import { SplashScreen } from 'src/components/loading-screen';
 

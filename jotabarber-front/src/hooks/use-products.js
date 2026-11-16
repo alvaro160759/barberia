@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
+
 import { catalogApi } from 'src/actions/catalog';
+
 import { toast } from 'src/components/snackbar';
 
 export function useProducts() {

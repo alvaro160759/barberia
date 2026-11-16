@@ -1,4 +1,5 @@
-import { Box, Button, Card, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, IconButton, Autocomplete } from '@mui/material';
+import { Box, Card, Stack, Table, Button, TableRow, TableBody, TableCell, TableHead, TextField, Typography, IconButton, Autocomplete, TableContainer } from '@mui/material';
+
 import { Iconify } from 'src/components/iconify';
 
 export function ServiceSelectionCard({ services, addedServices, setAddedServices, selectedService, setSelectedService, serviceSearch, setServiceSearch, fetchServices }) {

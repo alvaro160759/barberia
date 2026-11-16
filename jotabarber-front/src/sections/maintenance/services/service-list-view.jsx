@@ -1,27 +1,32 @@
 import { useState, useEffect } from 'react';
+
 import Card from '@mui/material/Card';
+import { Table, Button, TableBody, TableContainer } from '@mui/material';
+
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useServices } from 'src/hooks/use-services';
+
+import { DashboardContent } from 'src/layouts/dashboard';
+
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 import { SplashScreen } from 'src/components/loading-screen';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { DashboardContent } from 'src/layouts/dashboard';
 import {
-  TableNoData,
   useTable,
-  TableHeadCustom,
-  TableSelectedAction,
-  TablePaginationCustom,
   emptyRows,
+  TableNoData,
   TableEmptyRows,
+  TableHeadCustom,
+  TablePaginationCustom,
 } from 'src/components/table';
+
 import { ServiceTableRow } from './service-table-row';
 import { ServiceTableToolbar } from './service-table-toolbar';
-import { Button, Table, TableBody, TableContainer } from '@mui/material';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nombre' },

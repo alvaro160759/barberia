@@ -120,17 +120,8 @@ export const navData = [
       },
       {
         title: 'Gestión de citas',
-        path: '#/dashboard/menu_level',
+        path: paths.dashboard.appointments.root,
         icon: ICONS.label,
-        info: (
-          <Label
-            color="info"
-            variant="inverted"
-            startIcon={<Iconify icon="solar:bell-bing-bold-duotone" />}
-          >
-            NEW
-          </Label>
-        ),
       },
       {
         title: 'Gestión de egresos',

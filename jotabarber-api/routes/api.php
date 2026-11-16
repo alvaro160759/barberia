@@ -12,10 +12,20 @@ use App\Http\Controllers\{
     EmployeeController,
     ExpenseController,
     InventoryController,
+    PublicBookingController,
     ReportController,
     SaleController,
     ScheduleController
 };
+
+// Public booking routes (no authentication required)
+Route::prefix('public')->name('public.')->group(function () {
+    Route::get('branches', [PublicBookingController::class, 'branches'])->name('branches');
+    Route::get('barbers', [PublicBookingController::class, 'barbers'])->name('barbers');
+    Route::get('schedules', [PublicBookingController::class, 'schedules'])->name('schedules');
+    Route::get('services', [PublicBookingController::class, 'services'])->name('services');
+    Route::post('appointments', [PublicBookingController::class, 'store'])->name('appointments.store');
+});
 
 // Public authentication routes
 Route::prefix('auth')->group(function () {

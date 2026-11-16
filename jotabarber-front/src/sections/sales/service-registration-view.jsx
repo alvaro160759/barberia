@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Container, Grid } from '@mui/material';
+
+import { Grid, Container } from '@mui/material';
+
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import { useSettingsContext } from 'src/components/settings';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
 import { useServices } from 'src/hooks/use-services';
 import { useEmployees } from 'src/hooks/use-employees';
 import { useCustomers } from 'src/hooks/use-customers';
+
+import { useSettingsContext } from 'src/components/settings';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
+import { SummaryCard } from './components/summary-card';
 import { ClientSelectionCard } from './components/client-selection-card';
 import { BarberSelectionCard } from './components/barber-selection-card';
 import { ServiceSelectionCard } from './components/service-selection-card';
-import { SummaryCard } from './components/summary-card';
 
 export function ServiceRegistrationView() {
   const settings = useSettingsContext();

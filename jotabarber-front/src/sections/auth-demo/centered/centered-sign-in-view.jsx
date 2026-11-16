@@ -1,5 +1,5 @@
 import { z as zod } from 'zod';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -17,6 +17,7 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import axios, { endpoints } from 'src/utils/axios';
+import { publicBookingApi } from 'src/api/public-booking';
 
 import { Iconify } from 'src/components/iconify';
 import { AnimateAvatar } from 'src/components/animate';
@@ -49,8 +50,9 @@ export function CenteredSignInView() {
   const router = useRouter();
   const { checkUserSession } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState('');
+  const [branches, setBranches] = useState([]);
 
-  const defaultValues = { email: '', sucursal: '1', password: '' };
+  const defaultValues = { email: '', sucursal: '', password: '' };
 
   const methods = useForm({
     resolver: zodResolver(SignInSchema),
@@ -59,8 +61,25 @@ export function CenteredSignInView() {
 
   const {
     handleSubmit,
+    setValue,
     formState: { isSubmitting },
   } = methods;
+
+  useEffect(() => {
+    const loadBranches = async () => {
+      try {
+        const response = await publicBookingApi.getBranches();
+        const list = response.data || [];
+        setBranches(list);
+        if (list.length > 0) {
+          setValue('sucursal', String(list[0].id));
+        }
+      } catch (error) {
+        console.error('Error fetching branches:', error);
+      }
+    };
+    loadBranches();
+  }, [setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -112,9 +131,11 @@ export function CenteredSignInView() {
           ),
         }}
       >
-        <MenuItem value="1">Principal</MenuItem>
-        <MenuItem value="2">Sucursal 2</MenuItem>
-        <MenuItem value="3">Sucursal 3</MenuItem>
+        {branches.map((branch) => (
+          <MenuItem key={branch.id} value={String(branch.id)}>
+            {branch.name}
+          </MenuItem>
+        ))}
       </Field.Select>
 
 

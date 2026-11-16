@@ -60,6 +60,11 @@ export const endpoints = {
     details: '/api/product/details',
     search: '/api/product/search',
   },
+  appointments: {
+    list: '/api/appointments',
+    detail: (id) => `/api/appointments/${id}`,
+    status: (id) => `/api/appointments/${id}/status`,
+  },
   access: {
     branches: '/api/access/branches',
     users: '/api/access/users',

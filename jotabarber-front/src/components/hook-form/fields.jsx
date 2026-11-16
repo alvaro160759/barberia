@@ -19,6 +19,7 @@ export const Field = {
   Code: RHFCode,
   Editor: RHFEditor,
   Select: RHFSelect,
+  RhfSelect: RHFSelect,
   Upload: RHFUpload,
   Switch: RHFSwitch,
   Slider: RHFSlider,

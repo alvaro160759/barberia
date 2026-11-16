@@ -6,11 +6,11 @@ import Table from '@mui/material/Table';
 import TableRow from '@mui/material/TableRow';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import Typography from '@mui/material/Typography';
 
 import { paths } from 'src/routes/paths';
 
 import { usePermissions } from 'src/hooks/use-permissions';
+
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Iconify } from 'src/components/iconify';

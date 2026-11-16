@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
+
 import { Container } from '@mui/material';
+
 import { paths } from 'src/routes/paths';
-import { useParams } from 'src/routes/hooks';
-import { useRouter } from 'src/routes/hooks';
-import { useSettingsContext } from 'src/components/settings';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { SplashScreen } from 'src/components/loading-screen';
+import { useParams , useRouter } from 'src/routes/hooks';
+
 import { useBranches } from 'src/hooks/use-branches';
+
+import { useSettingsContext } from 'src/components/settings';
+import { SplashScreen } from 'src/components/loading-screen';
+import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
 import { BranchNewEditForm } from './branch-new-edit-form';
 
 export function BranchEditView() {

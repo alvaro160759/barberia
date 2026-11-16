@@ -87,6 +87,7 @@ const ServicesListPage = lazy(() => import('src/pages/maintenance/services/index
 const ServicesCreatePage = lazy(() => import('src/pages/maintenance/services/create'));
 const ServicesEditPage = lazy(() => import('src/pages/maintenance/services/edit'));
 const ServiceRegistrationPage = lazy(() => import('src/pages/sales/service-registration'));
+const AppointmentsPage = lazy(() => import('src/pages/appointments'));
 // Customers
 const CustomersListPage = lazy(() => import('src/pages/maintenance/customers/index'));
 const CustomersCreatePage = lazy(() => import('src/pages/maintenance/customers/create'));
@@ -261,6 +262,7 @@ export const dashboardRoutes = [
           { path: 'service-registration', element: <ServiceRegistrationPage /> },
         ],
       },
+      { path: 'appointments', element: <AppointmentsPage /> },
     ],
   },
 ];

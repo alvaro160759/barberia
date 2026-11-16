@@ -7,8 +7,6 @@ export function EmployeeTableToolbar() {
       alignItems={{ xs: 'flex-end', md: 'center' }}
       direction={{ xs: 'column', md: 'row' }}
       sx={{ p: 2.5, pt: 0 }}
-    >
-      
-    </Stack>
+     />
   );
 }

@@ -15,6 +15,7 @@ const PricingPage = lazy(() => import('src/pages/pricing'));
 const PaymentPage = lazy(() => import('src/pages/payment'));
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 const MaintenancePage = lazy(() => import('src/pages/maintenance'));
+const PublicBookingPage = lazy(() => import('src/pages/public-booking'));
 // Product
 const ProductListPage = lazy(() => import('src/pages/product/list'));
 const ProductDetailsPage = lazy(() => import('src/pages/product/details'));
@@ -53,6 +54,10 @@ export const mainRoutes = [
           {
             path: 'contact-us',
             element: <ContactPage />,
+          },
+          {
+            path: 'reserva',
+            element: <PublicBookingPage />,
           },
           {
             path: 'faqs',

@@ -17,5 +17,14 @@ class DatabaseSeeder extends Seeder {
 
         // Ejecutar seeder de categorías de productos
         $this->call(ProductCategoriesSeeder::class);
+
+        // Ejecutar seeder de servicios
+        $this->call(ServicesSeeder::class);
+
+        // Ejecutar seeder de barberos
+        $this->call(BarbersSeeder::class);
+
+        // Ejecutar seeder de horarios de barberos
+        $this->call(BarberSchedulesSeeder::class);
     }
 }

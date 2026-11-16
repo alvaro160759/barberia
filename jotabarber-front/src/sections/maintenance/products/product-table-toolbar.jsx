@@ -1,10 +1,9 @@
 import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/Button';
-import { paths } from 'src/routes/paths';
+import TextField from '@mui/material/TextField';
+
 import { useRouter } from 'src/routes/hooks';
-import { Iconify } from 'src/components/iconify';
+
 
 export function ProductTableToolbar({ onBranchChange, branches, selectedBranch }) {
   const router = useRouter();
