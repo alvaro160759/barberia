@@ -34,6 +34,11 @@ export const publicBookingApi = {
     return response.data;
   },
 
+  getDni: async (dni) => {
+    const response = await axios.get(`${API_BASE}/dni/${dni}`);
+    return response.data;
+  },
+
   createAppointment: async (data) => {
     const response = await axios.post(`${API_BASE}/appointments`, data);
     return response.data;

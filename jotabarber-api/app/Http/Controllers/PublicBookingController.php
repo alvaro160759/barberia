@@ -6,6 +6,7 @@ use App\Application\Appointments\SaveAppointment;
 use App\Support\{Api, Records};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class PublicBookingController extends Controller
 {
@@ -140,6 +141,56 @@ class PublicBookingController extends Controller
         }
         return Api::ok($availableSlots);
     }
+    public function dni(string $dni)
+    {
+        if (!preg_match('/^\d{8}$/', $dni)) {
+            return Api::error('El DNI debe tener 8 dígitos.', 422);
+        }
+        $local = DB::table('customers')
+            ->where('document_type', 'DNI')
+            ->where('document_number', $dni)
+            ->where('active', true)
+            ->first(['first_name', 'last_name']);
+        if ($local) {
+            $fullName = trim($local->first_name . ' ' . ($local->last_name ?? ''));
+            return Api::ok([
+                'dni' => $dni,
+                'full_name' => $fullName,
+                'first_name' => $local->first_name,
+                'last_name' => $local->last_name,
+            ]);
+        }
+        $token = config('jotabarber.apisperu_token');
+        if (!$token) {
+            return Api::error('El servicio de consulta de DNI no está configurado.', 500);
+        }
+        try {
+            $response = Http::timeout(10)->get("https://dniruc.apisperu.com/api/v1/dni/{$dni}", [
+                'token' => $token,
+            ]);
+        } catch (\Throwable $e) {
+            return Api::error('No se pudo consultar el DNI.', 502);
+        }
+        if (!$response->successful()) {
+            return Api::error('No se encontró información para ese DNI.', 404);
+        }
+        $data = $response->json() ?? [];
+        $firstName = $data['nombres'] ?? $data['nombres_completos'] ?? null;
+        $lastName = trim(
+            ($data['apellidoPaterno'] ?? $data['apellido_paterno'] ?? '') . ' ' .
+            ($data['apellidoMaterno'] ?? $data['apellido_materno'] ?? '')
+        ) ?: null;
+        $fullName = $data['nombre_completo'] ?? $data['nombreCompleto'] ?? trim(($firstName ?? '') . ' ' . ($lastName ?? ''));
+        if (!$fullName) {
+            return Api::error('No se encontró información para ese DNI.', 404);
+        }
+        return Api::ok([
+            'dni' => $dni,
+            'full_name' => $fullName,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+        ]);
+    }
     public function store(Request $r, SaveAppointment $action)
     {
         $d = $r->validate([
@@ -147,6 +198,7 @@ class PublicBookingController extends Controller
             'customer_name' => 'required|string|max:100',
             'customer_phone' => 'required|string|max:30',
             'customer_email' => 'nullable|email|max:150',
+            'customer_dni' => 'nullable|string|regex:/^\d{8}$/',
             'barber_id' => 'required|integer|exists:employees,id',
             'starts_at' => ['required', 'date', 'regex:/(Z|[+-]\d{2}:\d{2})$/'],
             'service_ids' => 'required|array|min:1|max:20',
@@ -161,6 +213,11 @@ class PublicBookingController extends Controller
             $nameParts = preg_split('/\s+/', trim($d['customer_name']), 2);
             $firstName = $nameParts[0];
             $lastName = $nameParts[1] ?? null;
+            $dni = $d['customer_dni'] ?? null;
+            $documentTaken = $dni && DB::table('customers')
+                ->where('document_type', 'DNI')
+                ->where('document_number', $dni)
+                ->exists();
             $customer = DB::table('customers')->where('phone', $d['customer_phone'])->first();
             if (!$customer) {
                 $customerId = DB::table('customers')->insertGetId([
@@ -168,6 +225,8 @@ class PublicBookingController extends Controller
                     'last_name' => $lastName,
                     'phone' => $d['customer_phone'],
                     'email' => $d['customer_email'] ?? null,
+                    'document_type' => $dni && !$documentTaken ? 'DNI' : null,
+                    'document_number' => $dni && !$documentTaken ? $dni : null,
                     'active' => true,
                     'created_at' => now(),
                     'updated_at' => now()
@@ -178,6 +237,8 @@ class PublicBookingController extends Controller
                     'first_name' => $firstName,
                     'last_name' => $lastName,
                     'email' => $d['customer_email'] ?? $customer->email,
+                    'document_type' => $dni && !$documentTaken ? 'DNI' : $customer->document_type,
+                    'document_number' => $dni && !$documentTaken ? $dni : $customer->document_number,
                     'updated_at' => now()
                 ]);
             }

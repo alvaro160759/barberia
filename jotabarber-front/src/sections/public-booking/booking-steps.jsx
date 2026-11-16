@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { QRCodeSVG } from 'qrcode.react';
+import { useEffect, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
@@ -17,6 +18,8 @@ import Grid from '@mui/material/Grid';
 
 import { Field } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
+import { toast } from 'src/components/snackbar';
+import { publicBookingApi } from 'src/api/public-booking';
 
 export function Stepper({ steps, activeStep }) {
   return (
@@ -308,7 +311,42 @@ export function StepSchedule({ schedules, loading }) {
 }
 
 export function StepConfirm({ branch, barber, date, time, services = [] }) {
-  const { watch } = useFormContext();
+  const { watch, setValue } = useFormContext();
+  const dni = watch('stepFive.customer_dni');
+  const [searchingDni, setSearchingDni] = useState(false);
+  const [nameLocked, setNameLocked] = useState(false);
+  const lastSearchedDni = useRef('');
+
+  useEffect(() => {
+    const cleanDni = (dni || '').replace(/\D/g, '');
+    if (cleanDni.length !== 8) {
+      setNameLocked(false);
+      return;
+    }
+    if (cleanDni === lastSearchedDni.current) return;
+
+    lastSearchedDni.current = cleanDni;
+    const search = async () => {
+      setSearchingDni(true);
+      try {
+        const response = await publicBookingApi.getDni(cleanDni);
+        const person = response.data;
+        if (person?.full_name) {
+          setValue('stepFive.customer_name', person.full_name, { shouldValidate: true });
+          setNameLocked(true);
+          toast.success(`Cliente encontrado: ${person.full_name}`);
+        }
+      } catch (error) {
+        lastSearchedDni.current = '';
+        setNameLocked(false);
+        const message = error?.response?.data?.message || 'No se pudo consultar el DNI';
+        toast.error(message);
+      } finally {
+        setSearchingDni(false);
+      }
+    };
+    search();
+  }, [dni, setValue]);
   const selectedIds = watch('stepThree.service_ids') || [];
   const selectedServices = services.filter((service) =>
     selectedIds.includes(Number(service.id))
@@ -351,9 +389,18 @@ export function StepConfirm({ branch, barber, date, time, services = [] }) {
       </Card>
 
       <Field.Text
+        name="stepFive.customer_dni"
+        label={searchingDni ? 'Consultando DNI...' : 'DNI (opcional)'}
+        fullWidth
+        disabled={searchingDni}
+        sx={{ mb: 2 }}
+      />
+
+      <Field.Text
         name="stepFive.customer_name"
         label="Nombre Completo"
         fullWidth
+        disabled={nameLocked}
         sx={{ mb: 2 }}
       />
 

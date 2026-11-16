@@ -36,6 +36,7 @@ const StepFourSchema = zod.object({
 });
 
 const StepFiveSchema = zod.object({
+  customer_dni: zod.string().regex(/^\d{8}$/, 'El DNI debe tener 8 dígitos').optional().or(zod.literal('')),
   customer_name: zod.string().min(1, { message: 'Nombre es requerido' }),
   customer_phone: zod.string().min(1, { message: 'Teléfono es requerido' }),
   customer_email: zod.string().email().optional().or(zod.literal('')),
@@ -55,7 +56,7 @@ const defaultValues = {
   stepTwo: { barber_id: 0 },
   stepThree: { service_ids: [] },
   stepFour: { date: dayjs().format(), time: '' },
-  stepFive: { customer_name: '', customer_phone: '', customer_email: '', notes: '' },
+  stepFive: { customer_dni: '', customer_name: '', customer_phone: '', customer_email: '', notes: '' },
 };
 
 export function BookingWizard() {
@@ -202,6 +203,7 @@ export function BookingWizard() {
         customer_name: data.stepFive.customer_name,
         customer_phone: data.stepFive.customer_phone,
         customer_email: data.stepFive.customer_email || null,
+        customer_dni: data.stepFive.customer_dni ? data.stepFive.customer_dni.replace(/\D/g, '') : null,
         barber_id: data.stepTwo.barber_id,
         starts_at: startsAt,
         service_ids: data.stepThree.service_ids,

@@ -24,6 +24,7 @@ Route::prefix('public')->name('public.')->group(function () {
     Route::get('barbers', [PublicBookingController::class, 'barbers'])->name('barbers');
     Route::get('schedules', [PublicBookingController::class, 'schedules'])->name('schedules');
     Route::get('services', [PublicBookingController::class, 'services'])->name('services');
+    Route::get('dni/{dni}', [PublicBookingController::class, 'dni'])->name('dni');
     Route::post('appointments', [PublicBookingController::class, 'store'])->name('appointments.store');
 });
 
