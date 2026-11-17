@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import { useFormContext } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid';
@@ -8,11 +7,18 @@ import { StepLayout } from './step-layout';
 import { SelectableCard } from './selectable-card';
 
 export function BranchStep({ branches, loading }) {
-  const { watch, setValue } = useFormContext();
+  const { watch, setValue, formState: { errors } } = useFormContext();
   const selectedId = watch('stepOne.branch_id');
 
   return (
-    <StepLayout title="Selecciona la sede" loading={loading}>
+    <StepLayout
+      title="Selecciona la sede"
+      icon="solar:buildings-2-bold-duotone"
+      loading={loading}
+      empty={!loading && branches.length === 0}
+      emptyMessage="No hay sedes disponibles en este momento. Inténtalo más tarde."
+      error={errors.stepOne?.branch_id?.message}
+    >
       <Grid container spacing={2}>
         {branches.map((branch) => {
           const selected = Number(selectedId) === Number(branch.id);

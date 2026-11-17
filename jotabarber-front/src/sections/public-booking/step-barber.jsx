@@ -6,15 +6,24 @@ import { useFormContext } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid';
 
+import { Iconify } from 'src/components/iconify';
+
 import { StepLayout } from './step-layout';
 import { SelectableCard } from './selectable-card';
 
 export function BarberStep({ barbers, loading }) {
-  const { watch, setValue } = useFormContext();
+  const { watch, setValue, formState: { errors } } = useFormContext();
   const selectedId = watch('stepTwo.barber_id');
 
   return (
-    <StepLayout title="Selecciona el barbero" loading={loading}>
+    <StepLayout
+      title="Selecciona el barbero"
+      icon="solar:user-bold-duotone"
+      loading={loading}
+      empty={!loading && barbers.length === 0}
+      emptyMessage="No hay barberos disponibles en esta sede."
+      error={errors.stepTwo?.barber_id?.message}
+    >
       <Grid container spacing={1.5}>
         {barbers.map((barber) => {
           const selected = Number(selectedId) === Number(barber.id);
@@ -42,6 +51,9 @@ export function BarberStep({ barbers, loading }) {
                     </Typography>
                   )}
                 </Box>
+                {selected && (
+                  <Iconify icon="solar:check-circle-bold" width={24} sx={{ color: 'primary.main', flexShrink: 0 }} />
+                )}
               </SelectableCard>
             </Grid>
           );

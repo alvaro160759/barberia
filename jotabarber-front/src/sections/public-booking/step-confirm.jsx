@@ -7,12 +7,17 @@ import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 
 import { Field } from 'src/components/hook-form';
+import { Iconify } from 'src/components/iconify';
 import { toast } from 'src/components/snackbar';
 import { publicBookingApi } from 'src/api/public-booking';
 
 export function ConfirmStep({ branch, barber, date, time, services = [] }) {
-  const { watch, setValue } = useFormContext();
+  const { watch, setValue, formState: { errors } } = useFormContext();
   const dni = watch('stepFive.customer_dni');
+  const customerError = errors.stepFive?.customer_name?.message
+    || errors.stepFive?.customer_phone?.message
+    || errors.stepFive?.customer_email?.message
+    || errors.stepFive?.customer_dni?.message;
   const selectedIds = watch('stepThree.service_ids') || [];
   const [searchingDni, setSearchingDni] = useState(false);
   const [nameLocked, setNameLocked] = useState(false);
@@ -57,9 +62,12 @@ export function ConfirmStep({ branch, barber, date, time, services = [] }) {
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        Resumen de la Reserva
-      </Typography>
+      <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
+        <Iconify icon="solar:clipboard-check-bold-duotone" width={22} sx={{ mr: 1, color: 'text.secondary' }} />
+        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+          Confirma tu reserva
+        </Typography>
+      </Box>
 
       <Card sx={{ mb: 3 }}>
         <CardContent>
@@ -88,6 +96,19 @@ export function ConfirmStep({ branch, barber, date, time, services = [] }) {
           </Typography>
         </CardContent>
       </Card>
+
+      <Box display="flex" alignItems="center" sx={{ mt: 3, mb: 2 }}>
+        <Iconify icon="solar:user-id-bold-duotone" width={20} sx={{ mr: 1, color: 'text.secondary' }} />
+        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+          Tus datos
+        </Typography>
+      </Box>
+
+      {customerError && (
+        <Typography variant="caption" color="error" sx={{ mb: 1.5, display: 'block' }}>
+          {customerError}
+        </Typography>
+      )}
 
       <Field.Text
         name="stepFive.customer_dni"

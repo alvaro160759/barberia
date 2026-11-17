@@ -2,42 +2,83 @@ import dayjs from 'dayjs';
 import { useFormContext } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 
 import { Field } from 'src/components/hook-form';
+import { Iconify } from 'src/components/iconify';
 
+import { StepLayout } from './step-layout';
 import { SelectableCard } from './selectable-card';
 
-export function ScheduleStep({ schedules, loading }) {
-  const { watch, setValue } = useFormContext();
+export function ScheduleStep({ schedules, services = [], loading }) {
+  const { watch, setValue, formState: { errors } } = useFormContext();
   const selectedTime = watch('stepFour.time');
+  const selectedDate = watch('stepFour.date');
+  const selectedServiceIds = watch('stepThree.service_ids') || [];
+
+  const selectedServices = services.filter((service) =>
+    selectedServiceIds.includes(Number(service.id))
+  );
+  const totalDuration = selectedServices.reduce((sum, service) => sum + Number(service.duration_minutes), 0);
 
   return (
-    <Box>
+    <StepLayout
+      title="Selecciona fecha y horario"
+      icon="solar:clock-circle-bold-duotone"
+      error={errors.stepFour?.date?.message || errors.stepFour?.time?.message}
+    >
+      {selectedServices.length > 0 && (
+        <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', rowGap: 1 }}>
+          {selectedServices.map((service) => (
+            <Chip
+              key={service.id}
+              size="small"
+              variant="outlined"
+              icon={<Iconify icon="solar:scissors-bold" width={14} />}
+              label={`${service.name} · ${service.duration_minutes} min`}
+            />
+          ))}
+          <Chip
+            size="small"
+            color="primary"
+            variant="soft"
+            label={`Total: ${totalDuration} min`}
+          />
+        </Stack>
+      )}
+
       <Field.DatePicker
         name="stepFour.date"
         label="Seleccionar Fecha"
         fullWidth
         minDate={dayjs()}
-        sx={{ mb: 3 }}
+        sx={{ mb: 2 }}
       />
 
-      {loading ? (
-        <Box display="flex" justifyContent="center" py={3}>
-          <CircularProgress />
-        </Box>
-      ) : (
+      {selectedDate && !loading && (
         <>
-          <Typography variant="subtitle2" gutterBottom sx={{ mb: 2 }}>
-            Horarios Disponibles
+          <Typography variant="subtitle2" gutterBottom sx={{ mb: 1.5 }}>
+            Horarios disponibles
           </Typography>
 
           {schedules.length === 0 ? (
-            <Typography variant="body2" color="text.secondary">
-              No hay horarios disponibles para la fecha seleccionada. Por favor, seleccione otra fecha.
-            </Typography>
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              sx={{ py: 3, borderRadius: 1.5, border: (theme) => `dashed 1px ${theme.vars.palette.divider}` }}
+            >
+              <Iconify icon="solar:clock-circle-linear" width={40} sx={{ color: 'text.disabled', mb: 1 }} />
+              <Typography variant="body2" color="text.secondary" textAlign="center">
+                No hay horarios disponibles para esta fecha.
+                <br />
+                Prueba con otro día.
+              </Typography>
+            </Box>
           ) : (
             <Grid container spacing={1}>
               {schedules.map((schedule) => {
@@ -67,6 +108,12 @@ export function ScheduleStep({ schedules, loading }) {
           )}
         </>
       )}
-    </Box>
+
+      {loading && (
+        <Box display="flex" justifyContent="center" py={3}>
+          <CircularProgress />
+        </Box>
+      )}
+    </StepLayout>
   );
 }
