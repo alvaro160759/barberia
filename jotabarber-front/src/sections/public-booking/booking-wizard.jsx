@@ -3,18 +3,18 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-import { Form } from 'src/components/hook-form';
-
 import { usePublicBooking } from 'src/hooks/use-public-booking';
 
-import { BookingStepper } from './booking-stepper';
-import { BookingSummary } from './booking-summary';
+import { Form } from 'src/components/hook-form';
+
 import { BranchStep } from './step-branch';
 import { BarberStep } from './step-barber';
+import { ConfirmStep } from './step-confirm';
 import { ServicesStep } from './step-services';
 import { ScheduleStep } from './step-schedule';
-import { ConfirmStep } from './step-confirm';
 import { CompletedStep } from './step-completed';
+import { BookingStepper } from './booking-stepper';
+import { BookingSummary } from './booking-summary';
 
 const STEP_FIELDS = ['stepOne', 'stepTwo', 'stepThree', 'stepFour'];
 

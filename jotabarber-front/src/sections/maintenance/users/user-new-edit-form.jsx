@@ -62,7 +62,7 @@ export function UserNewEditForm({ currentUser }) {
         // Por defecto, establecer la sucursal seleccionada
         const selectedBranchId = localStorage.getItem('selectedBranchId');
         if (selectedBranchId) {
-          setFormData((prev) => ({ ...prev, branch_id: parseInt(selectedBranchId) }));
+          setFormData((prev) => ({ ...prev, branch_id: parseInt(selectedBranchId, 10) }));
         }
       }
       setLoading(false);

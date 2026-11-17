@@ -1,15 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { useRef, useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 
+import { publicBookingApi } from 'src/api/public-booking';
+
+import { toast } from 'src/components/snackbar';
 import { Field } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
-import { toast } from 'src/components/snackbar';
-import { publicBookingApi } from 'src/api/public-booking';
 
 export function ConfirmStep({ branch, barber, date, time, services = [] }) {
   const { watch, setValue, formState: { errors } } = useFormContext();

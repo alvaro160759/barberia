@@ -17,6 +17,7 @@ import { useRoles } from 'src/hooks/use-roles';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
+import { accessApi } from 'src/actions/access';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { toast } from 'src/components/snackbar';

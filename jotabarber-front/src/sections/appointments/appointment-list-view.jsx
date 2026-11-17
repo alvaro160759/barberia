@@ -12,9 +12,9 @@ import { SplashScreen } from 'src/components/loading-screen';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { useTable, TablePaginationCustom } from 'src/components/table';
 
-import { EMPTY_APPOINTMENT_FILTERS } from './appointments-constants';
-import { AppointmentFilters } from './appointment-filters';
 import { AppointmentTable } from './appointment-table';
+import { AppointmentFilters } from './appointment-filters';
+import { EMPTY_APPOINTMENT_FILTERS } from './appointments-constants';
 import { AppointmentDetailDialog } from './appointment-detail-dialog';
 
 export function AppointmentListView() {

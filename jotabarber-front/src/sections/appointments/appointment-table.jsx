@@ -1,8 +1,8 @@
 import Table from '@mui/material/Table';
+import TableRow from '@mui/material/TableRow';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 
@@ -12,8 +12,8 @@ import {
   TableNoData,
 } from 'src/components/table';
 
-import { AppointmentStatusChip } from './appointment-status-chip';
 import { formatAppointmentDate } from './appointments-constants';
+import { AppointmentStatusChip } from './appointment-status-chip';
 
 export function AppointmentTable({ rows, table, notFound, onOpenDetail }) {
   const pagedRows = rows.slice(table.page * table.rowsPerPage, table.page * table.rowsPerPage + table.rowsPerPage);

@@ -1,6 +1,6 @@
 import { z as zod } from 'zod';
-import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Stack from '@mui/material/Stack';
@@ -17,6 +17,8 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import axios, { endpoints } from 'src/utils/axios';
+
+import { CONFIG } from 'src/config-global';
 import { publicBookingApi } from 'src/api/public-booking';
 
 import { Iconify } from 'src/components/iconify';
@@ -25,8 +27,6 @@ import { Form, Field } from 'src/components/hook-form';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { setSession } from 'src/auth/context/jwt/utils';
-
-import Logo from '../../../../public/logo/logo-jota.png';
 
 // ----------------------------------------------------------------------
 
@@ -105,7 +105,7 @@ export function CenteredSignInView() {
     }
   });
 
-  const renderLogo = <AnimateAvatar sx={{ mb: 3, mx: 'auto' }} width={120} slotProps={{ avatar: { src: Logo } }} />;
+  const renderLogo = <AnimateAvatar sx={{ mb: 3, mx: 'auto' }} width={120} slotProps={{ avatar: { src: `${CONFIG.site.basePath}/logo/logo-jota.png` } }} />;
 
   const renderHead = (
     <Stack alignItems="center" spacing={1} sx={{ mb: 5 }}>

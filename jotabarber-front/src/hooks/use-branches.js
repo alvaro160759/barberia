@@ -72,12 +72,11 @@ export function useBranches() {
       return response.data;
     } catch (err) {
       // Manejar diferentes formatos de error
-      console.log(err.errors?.active?.[0]);
       if (err.errors) {
         // Si es un error de validación de Laravel, mostrar primero
-        const error = err.errors?.active?.[0];
-        
-        toast.error(error);
+        const firstError = err.errors?.active?.[0];
+
+        toast.error(firstError);
       } else {
         toast.error(err.message);
       }

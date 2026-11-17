@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
 import MuiStepper from '@mui/material/Stepper';
+import StepLabel from '@mui/material/StepLabel';
 
 import { Iconify } from 'src/components/iconify';
 

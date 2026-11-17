@@ -16,8 +16,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { Iconify } from 'src/components/iconify';
 
 import {
-  APPOINTMENT_STATUS_OPTIONS,
   APPOINTMENT_STATUS_COLORS,
+  APPOINTMENT_STATUS_OPTIONS,
 } from './appointments-constants';
 
 const DATE_PRESETS = [

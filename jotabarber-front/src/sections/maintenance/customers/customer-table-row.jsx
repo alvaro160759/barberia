@@ -1,5 +1,3 @@
-import PropTypes from 'prop-types';
-
 import Stack from '@mui/material/Stack';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -8,14 +6,6 @@ import IconButton from '@mui/material/IconButton';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
-
-CustomerTableRow.propTypes = {
-  row: PropTypes.object,
-  selected: PropTypes.bool,
-  onSelectRow: PropTypes.func,
-  onEditRow: PropTypes.func,
-  onDeleteRow: PropTypes.func,
-};
 
 export function CustomerTableRow({ row, selected, onSelectRow, onEditRow, onDeleteRow }) {
   return (
