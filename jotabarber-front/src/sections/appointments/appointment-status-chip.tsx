@@ -5,7 +5,13 @@ import {
   getAppointmentStatusLabel,
 } from './appointments-constants';
 
-export function AppointmentStatusChip({ status }) {
+import type { AppointmentStatus } from './appointments-constants';
+
+interface AppointmentStatusChipProps {
+  status: AppointmentStatus;
+}
+
+export function AppointmentStatusChip({ status }: AppointmentStatusChipProps) {
   return (
     <Chip
       size="small"

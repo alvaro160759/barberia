@@ -1,3 +1,5 @@
+import type { CreatedAppointment } from 'src/hooks/use-public-booking';
+
 import { QRCodeSVG } from 'qrcode.react';
 
 import Box from '@mui/material/Box';
@@ -6,7 +8,12 @@ import Typography from '@mui/material/Typography';
 
 import { Iconify } from 'src/components/iconify';
 
-export function CompletedStep({ appointmentData, onReset }) {
+interface CompletedStepProps {
+  appointmentData: CreatedAppointment | null;
+  onReset: () => void;
+}
+
+export function CompletedStep({ appointmentData, onReset }: CompletedStepProps) {
   const qrValue = appointmentData ? JSON.stringify({
     id: appointmentData.id,
     code: appointmentData.code || appointmentData.id

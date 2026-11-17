@@ -1,3 +1,5 @@
+import type { PublicBarber, PublicBranch, PublicService, BookingFormValues } from 'src/hooks/use-public-booking';
+
 import { useFormContext } from 'react-hook-form';
 import { useRef, useState, useEffect } from 'react';
 
@@ -12,8 +14,16 @@ import { toast } from 'src/components/snackbar';
 import { Field } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
 
-export function ConfirmStep({ branch, barber, date, time, services = [] }) {
-  const { watch, setValue, formState: { errors } } = useFormContext();
+interface ConfirmStepProps {
+  branch?: PublicBranch;
+  barber?: PublicBarber;
+  date: string;
+  time: string;
+  services?: PublicService[];
+}
+
+export function ConfirmStep({ branch, barber, date, time, services = [] }: ConfirmStepProps) {
+  const { watch, setValue, formState: { errors } } = useFormContext<BookingFormValues>();
   const dni = watch('stepFive.customer_dni');
   const customerError = errors.stepFive?.customer_name?.message
     || errors.stepFive?.customer_phone?.message
@@ -46,7 +56,8 @@ export function ConfirmStep({ branch, barber, date, time, services = [] }) {
       } catch (error) {
         lastSearchedDni.current = '';
         setNameLocked(false);
-        const message = error?.response?.data?.message || 'No se pudo consultar el DNI';
+        const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
+          || 'No se pudo consultar el DNI';
         toast.error(message);
       } finally {
         setSearchingDni(false);

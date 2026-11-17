@@ -1,3 +1,5 @@
+import type { PublicBranch, BookingFormValues } from 'src/hooks/use-public-booking';
+
 import { useFormContext } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid';
@@ -6,8 +8,13 @@ import Typography from '@mui/material/Typography';
 import { StepLayout } from './step-layout';
 import { SelectableCard } from './selectable-card';
 
-export function BranchStep({ branches, loading }) {
-  const { watch, setValue, formState: { errors } } = useFormContext();
+interface BranchStepProps {
+  branches: PublicBranch[];
+  loading: boolean;
+}
+
+export function BranchStep({ branches, loading }: BranchStepProps) {
+  const { watch, setValue, formState: { errors } } = useFormContext<BookingFormValues>();
   const selectedId = watch('stepOne.branch_id');
 
   return (

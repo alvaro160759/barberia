@@ -49,7 +49,7 @@ const WizardSchema = zod.object({
   stepFive: StepFiveSchema,
 });
 
-const defaultValues = {
+const defaultValues: BookingFormValues = {
   stepOne: { branch_id: 0 },
   stepTwo: { barber_id: 0 },
   stepThree: { service_ids: [] },
@@ -57,20 +57,56 @@ const defaultValues = {
   stepFive: { customer_dni: '', customer_name: '', customer_phone: '', customer_email: '', notes: '' },
 };
 
+export type BookingFormValues = zod.infer<typeof WizardSchema>;
+
+export interface PublicBranch {
+  id: number;
+  name: string;
+  address?: string;
+  phone?: string;
+}
+
+export interface PublicBarber {
+  id: number;
+  first_name: string;
+  last_name: string;
+  photo_url?: string | null;
+  avatar_url?: string | null;
+  rating?: number | null;
+  phone?: string;
+}
+
+export interface PublicService {
+  id: number;
+  name: string;
+  price: number | string;
+  duration_minutes: number | string;
+}
+
+export interface ScheduleSlot {
+  time: string;
+  available: boolean;
+}
+
+export interface CreatedAppointment {
+  id: number | string;
+  code?: string;
+}
+
 export function usePublicBooking() {
   const [activeStep, setActiveStep] = useState(0);
-  const [branches, setBranches] = useState([]);
-  const [barbers, setBarbers] = useState([]);
-  const [schedules, setSchedules] = useState([]);
-  const [services, setServices] = useState([]);
+  const [branches, setBranches] = useState<PublicBranch[]>([]);
+  const [barbers, setBarbers] = useState<PublicBarber[]>([]);
+  const [schedules, setSchedules] = useState<ScheduleSlot[]>([]);
+  const [services, setServices] = useState<PublicService[]>([]);
   const [loadingBranches, setLoadingBranches] = useState(false);
   const [loadingBarbers, setLoadingBarbers] = useState(false);
   const [loadingServices, setLoadingServices] = useState(false);
   const [loadingSchedules, setLoadingSchedules] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [appointmentData, setAppointmentData] = useState(null);
+  const [appointmentData, setAppointmentData] = useState<CreatedAppointment | null>(null);
 
-  const methods = useForm({
+  const methods = useForm<BookingFormValues>({
     mode: 'onChange',
     resolver: zodResolver(WizardSchema),
     defaultValues,
@@ -153,7 +189,12 @@ export function usePublicBooking() {
       const fetchSchedules = async () => {
         setLoadingSchedules(true);
         try {
-          const response = await publicBookingApi.getSchedules(selectedBranchId, selectedBarberId, selectedDate, selectedServiceIds || []);
+          const response = await publicBookingApi.getSchedules(
+            selectedBranchId,
+            selectedBarberId,
+            selectedDate,
+            selectedServiceIds || []
+          );
           setSchedules(response.data || []);
         } catch (error) {
           console.error('Error fetching schedules:', error);
@@ -167,7 +208,7 @@ export function usePublicBooking() {
   }, [selectedBranchId, selectedBarberId, selectedDate, selectedServiceIds, activeStep]);
 
   const handleNext = useCallback(
-    async (step) => {
+    async (step?: keyof BookingFormValues) => {
       if (step) {
         const isValid = await trigger(step);
 

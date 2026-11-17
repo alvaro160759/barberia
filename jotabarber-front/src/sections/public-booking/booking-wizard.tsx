@@ -1,3 +1,5 @@
+import type { BookingFormValues } from 'src/hooks/use-public-booking';
+
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
@@ -16,7 +18,7 @@ import { CompletedStep } from './step-completed';
 import { BookingStepper } from './booking-stepper';
 import { BookingSummary } from './booking-summary';
 
-const STEP_FIELDS = ['stepOne', 'stepTwo', 'stepThree', 'stepFour'];
+const STEP_FIELDS: (keyof BookingFormValues)[] = ['stepOne', 'stepTwo', 'stepThree', 'stepFour'];
 
 export function BookingWizard() {
   const {
@@ -60,7 +62,7 @@ export function BookingWizard() {
               mb: 3,
               minHeight: { xs: 220, sm: 300 },
               borderRadius: 1.5,
-              border: (theme) => `dashed 1px ${theme.vars.palette.divider}`,
+              border: (theme: any) => `dashed 1px ${theme.vars.palette.divider}`,
             }}
           >
             {activeStep === 0 && <BranchStep branches={branches} loading={loadingBranches} />}

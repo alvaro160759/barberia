@@ -1,3 +1,5 @@
+import type { ScheduleSlot, PublicService, BookingFormValues } from 'src/hooks/use-public-booking';
+
 import dayjs from 'dayjs';
 import { useFormContext } from 'react-hook-form';
 
@@ -14,8 +16,14 @@ import { Iconify } from 'src/components/iconify';
 import { StepLayout } from './step-layout';
 import { SelectableCard } from './selectable-card';
 
-export function ScheduleStep({ schedules, services = [], loading }) {
-  const { watch, setValue, formState: { errors } } = useFormContext();
+interface ScheduleStepProps {
+  schedules: ScheduleSlot[];
+  services?: PublicService[];
+  loading: boolean;
+}
+
+export function ScheduleStep({ schedules, services = [], loading }: ScheduleStepProps) {
+  const { watch, setValue, formState: { errors } } = useFormContext<BookingFormValues>();
   const selectedTime = watch('stepFour.time');
   const selectedDate = watch('stepFour.date');
   const selectedServiceIds = watch('stepThree.service_ids') || [];
@@ -45,7 +53,7 @@ export function ScheduleStep({ schedules, services = [], loading }) {
           <Chip
             size="small"
             color="primary"
-            variant="soft"
+            variant="outlined"
             label={`Total: ${totalDuration} min`}
           />
         </Stack>
@@ -70,7 +78,7 @@ export function ScheduleStep({ schedules, services = [], loading }) {
               display="flex"
               flexDirection="column"
               alignItems="center"
-              sx={{ py: 3, borderRadius: 1.5, border: (theme) => `dashed 1px ${theme.vars.palette.divider}` }}
+              sx={{ py: 3, borderRadius: 1.5, border: (theme: any) => `dashed 1px ${theme.vars.palette.divider}` }}
             >
               <Iconify icon="solar:clock-circle-linear" width={40} sx={{ color: 'text.disabled', mb: 1 }} />
               <Typography variant="body2" color="text.secondary" textAlign="center">

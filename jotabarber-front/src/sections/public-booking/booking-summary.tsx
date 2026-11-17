@@ -1,3 +1,6 @@
+import type { ReactNode } from 'react';
+import type { PublicBarber, PublicBranch, PublicService } from 'src/hooks/use-public-booking';
+
 import dayjs from 'dayjs';
 
 import Box from '@mui/material/Box';
@@ -7,7 +10,13 @@ import CardContent from '@mui/material/CardContent';
 
 import { Iconify } from 'src/components/iconify';
 
-function SummaryRow({ icon, label, value }) {
+interface SummaryRowProps {
+  icon: string;
+  label: string;
+  value?: ReactNode;
+}
+
+function SummaryRow({ icon, label, value }: SummaryRowProps) {
   if (!value) return null;
   return (
     <Box display="flex" alignItems="flex-start" sx={{ mb: 1.5 }}>
@@ -24,7 +33,23 @@ function SummaryRow({ icon, label, value }) {
   );
 }
 
-export function BookingSummary({ branch, barber, services = [], selectedServiceIds = [], date, time }) {
+interface BookingSummaryProps {
+  branch?: PublicBranch;
+  barber?: PublicBarber;
+  services?: PublicService[];
+  selectedServiceIds?: number[];
+  date?: string;
+  time?: string;
+}
+
+export function BookingSummary({
+  branch,
+  barber,
+  services = [],
+  selectedServiceIds = [],
+  date,
+  time,
+}: BookingSummaryProps) {
   const selectedServices = services.filter((service) =>
     selectedServiceIds.includes(Number(service.id))
   );
@@ -32,7 +57,7 @@ export function BookingSummary({ branch, barber, services = [], selectedServiceI
   const totalPrice = selectedServices.reduce((sum, service) => sum + Number(service.price), 0);
 
   const formattedDate = date ? dayjs(date).format('ddd DD/MM/YYYY') : null;
-  const hasSelections = branch || barber || selectedServices.length > 0 || (date && time);
+  const hasSelections = branch || barber || selectedServices.length > 0 || Boolean(date && time);
 
   return (
     <Card
@@ -96,7 +121,7 @@ export function BookingSummary({ branch, barber, services = [], selectedServiceI
                 sx={{
                   mt: 2,
                   pt: 1.5,
-                  borderTop: (theme) => `dashed 1px ${theme.vars.palette.divider}`,
+                  borderTop: (theme: any) => `dashed 1px ${theme.vars.palette.divider}`,
                 }}
               >
                 <Typography variant="subtitle2">

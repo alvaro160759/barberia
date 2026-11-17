@@ -5,7 +5,12 @@ import StepLabel from '@mui/material/StepLabel';
 
 import { Iconify } from 'src/components/iconify';
 
-export function BookingStepper({ steps, activeStep }) {
+interface BookingStepperProps {
+  steps: string[];
+  activeStep: number;
+}
+
+export function BookingStepper({ steps, activeStep }: BookingStepperProps) {
   return (
     <MuiStepper activeStep={activeStep} alternativeLabel sx={{ mb: 5 }}>
       {steps.map((label, index) => (

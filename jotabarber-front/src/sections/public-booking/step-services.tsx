@@ -1,3 +1,5 @@
+import type { PublicService, BookingFormValues } from 'src/hooks/use-public-booking';
+
 import { useFormContext } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
@@ -11,11 +13,16 @@ import { Iconify } from 'src/components/iconify';
 import { StepLayout } from './step-layout';
 import { SelectableCard } from './selectable-card';
 
-export function ServicesStep({ services, loading }) {
-  const { watch, setValue, formState: { errors } } = useFormContext();
+interface ServicesStepProps {
+  services: PublicService[];
+  loading: boolean;
+}
+
+export function ServicesStep({ services, loading }: ServicesStepProps) {
+  const { watch, setValue, formState: { errors } } = useFormContext<BookingFormValues>();
   const selectedIds = watch('stepThree.service_ids') || [];
 
-  const toggleService = (id) => {
+  const toggleService = (id: number) => {
     const next = selectedIds.includes(id)
       ? selectedIds.filter((value) => value !== id)
       : [...selectedIds, id];
@@ -83,7 +90,7 @@ export function ServicesStep({ services, loading }) {
             mt: 2,
             pt: 2,
             px: 1,
-            borderTop: (theme) => `dashed 1px ${theme.vars.palette.divider}`,
+            borderTop: (theme: any) => `dashed 1px ${theme.vars.palette.divider}`,
           }}
         >
           <Typography variant="body2" color="text.secondary">

@@ -1,3 +1,5 @@
+import type { ChangeEvent } from 'react';
+
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
@@ -20,6 +22,34 @@ import {
   APPOINTMENT_STATUS_OPTIONS,
 } from './appointments-constants';
 
+import type {
+  BarberOption,
+  BranchOption,
+  AppointmentStatus,
+  AppointmentFilters as AppointmentFiltersState,
+} from './appointments-constants';
+
+interface DateRange {
+  from: string;
+  to: string;
+}
+
+interface AppointmentFiltersProps {
+  branches: BranchOption[];
+  selectedBranch: string;
+  onBranchChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  barbers: BarberOption[];
+  filters: AppointmentFiltersState;
+  onFilterChange: (field: keyof AppointmentFiltersState) => (event: ChangeEvent<HTMLInputElement>) => void;
+  onBarberChange: (barberId: string | number) => void;
+  onApplyFilters: () => void;
+  onClearFilters: () => void;
+  onApplyDateRange: (range: DateRange) => void;
+  hasActiveFilters: boolean;
+  count: number;
+  onRefresh: () => void;
+}
+
 const DATE_PRESETS = [
   { key: 'today', label: 'Hoy' },
   { key: 'tomorrow', label: 'Mañana' },
@@ -28,7 +58,7 @@ const DATE_PRESETS = [
   { key: 'all', label: 'Todas' },
 ];
 
-function getPresetRange(key) {
+function getPresetRange(key: string): DateRange {
   const today = dayjs();
   switch (key) {
     case 'today':
@@ -52,7 +82,7 @@ function getPresetRange(key) {
   }
 }
 
-function statusDotColor(status) {
+function statusDotColor(status: AppointmentStatus) {
   const color = APPOINTMENT_STATUS_COLORS[status];
   return color === 'default' ? 'text.disabled' : `${color}.main`;
 }
@@ -71,7 +101,7 @@ export function AppointmentFilters({
   hasActiveFilters,
   count,
   onRefresh,
-}) {
+}: AppointmentFiltersProps) {
   const selectedBarber = useMemo(
     () => barbers.find((barber) => String(barber.id) === String(filters.barber_id)) || null,
     [barbers, filters.barber_id]

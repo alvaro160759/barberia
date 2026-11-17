@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Skeleton from '@mui/material/Skeleton';
@@ -17,7 +19,25 @@ export function StepLoadingSkeleton() {
   );
 }
 
-export function StepLayout({ title, icon, loading = false, empty = false, emptyMessage, error, children }) {
+interface StepLayoutProps {
+  title: ReactNode;
+  icon?: string;
+  loading?: boolean;
+  empty?: boolean;
+  emptyMessage?: ReactNode;
+  error?: ReactNode;
+  children?: ReactNode;
+}
+
+export function StepLayout({
+  title,
+  icon,
+  loading = false,
+  empty = false,
+  emptyMessage,
+  error,
+  children,
+}: StepLayoutProps) {
   return (
     <Box>
       <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
@@ -35,7 +55,7 @@ export function StepLayout({ title, icon, loading = false, empty = false, emptyM
           flexDirection="column"
           alignItems="center"
           justifyContent="center"
-          sx={{ py: 6, borderRadius: 1.5, border: (theme) => `dashed 1px ${theme.vars.palette.divider}` }}
+          sx={{ py: 6, borderRadius: 1.5, border: (theme: any) => `dashed 1px ${theme.vars.palette.divider}` }}
         >
           <Iconify icon="solar:inbox-linear" width={48} sx={{ color: 'text.disabled', mb: 1.5 }} />
           <Typography variant="body2" color="text.secondary" textAlign="center">

@@ -1,3 +1,5 @@
+import type { ChangeEvent } from 'react';
+
 import { useState } from 'react';
 
 import Card from '@mui/material/Card';
@@ -17,10 +19,17 @@ import { AppointmentFilters } from './appointment-filters';
 import { EMPTY_APPOINTMENT_FILTERS } from './appointments-constants';
 import { AppointmentDetailDialog } from './appointment-detail-dialog';
 
+import type { AppointmentFilters as AppointmentFiltersState } from './appointments-constants';
+
+interface DateRange {
+  from: string;
+  to: string;
+}
+
 export function AppointmentListView() {
   const table = useTable();
-  const [filters, setFilters] = useState(EMPTY_APPOINTMENT_FILTERS);
-  const [appliedFilters, setAppliedFilters] = useState(EMPTY_APPOINTMENT_FILTERS);
+  const [filters, setFilters] = useState<AppointmentFiltersState>(EMPTY_APPOINTMENT_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState<AppointmentFiltersState>(EMPTY_APPOINTMENT_FILTERS);
 
   const {
     rows,
@@ -41,11 +50,12 @@ export function AppointmentListView() {
 
   const hasActiveFilters = Object.values(appliedFilters).some(Boolean);
 
-  const handleFilterChange = (field) => (event) => {
-    setFilters((prev) => ({ ...prev, [field]: event.target.value }));
-  };
+  const handleFilterChange = (field: keyof AppointmentFiltersState) =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setFilters((prev) => ({ ...prev, [field]: event.target.value }));
+    };
 
-  const handleBarberChange = (barberId) => {
+  const handleBarberChange = (barberId: string | number) => {
     setFilters((prev) => ({ ...prev, barber_id: barberId }));
   };
 
@@ -58,7 +68,7 @@ export function AppointmentListView() {
     setAppliedFilters(EMPTY_APPOINTMENT_FILTERS);
   };
 
-  const handleApplyDateRange = ({ from, to }) => {
+  const handleApplyDateRange = ({ from, to }: DateRange) => {
     const next = { ...filters, from, to };
     setFilters(next);
     setAppliedFilters(next);

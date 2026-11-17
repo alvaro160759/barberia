@@ -1,3 +1,5 @@
+import type { PublicBarber, BookingFormValues } from 'src/hooks/use-public-booking';
+
 import { useFormContext } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
@@ -11,8 +13,13 @@ import { Iconify } from 'src/components/iconify';
 import { StepLayout } from './step-layout';
 import { SelectableCard } from './selectable-card';
 
-export function BarberStep({ barbers, loading }) {
-  const { watch, setValue, formState: { errors } } = useFormContext();
+interface BarberStepProps {
+  barbers: PublicBarber[];
+  loading: boolean;
+}
+
+export function BarberStep({ barbers, loading }: BarberStepProps) {
+  const { watch, setValue, formState: { errors } } = useFormContext<BookingFormValues>();
   const selectedId = watch('stepTwo.barber_id');
 
   return (

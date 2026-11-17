@@ -18,7 +18,25 @@ import {
   formatAppointmentDate,
 } from './appointments-constants';
 
-export function AppointmentDetailDialog({ open, onClose, detail, loading, actionLoading, onNextStatus }) {
+import type { AppointmentDetail, AppointmentStatus } from './appointments-constants';
+
+interface AppointmentDetailDialogProps {
+  open: boolean;
+  onClose: () => void;
+  detail: AppointmentDetail | null;
+  loading: boolean;
+  actionLoading: boolean;
+  onNextStatus: (status: AppointmentStatus) => void;
+}
+
+export function AppointmentDetailDialog({
+  open,
+  onClose,
+  detail,
+  loading,
+  actionLoading,
+  onNextStatus,
+}: AppointmentDetailDialogProps) {
   const actions = detail ? APPOINTMENT_ACTIONS[detail.status] || [] : [];
   const [primaryAction, ...secondaryActions] = actions;
 
