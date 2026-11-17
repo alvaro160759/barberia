@@ -5,6 +5,8 @@ import axios, { endpoints } from 'src/utils/axios';
 import { employeesApi } from 'src/actions/employees';
 import { appointmentsApi } from 'src/actions/appointments';
 
+import { toast } from 'src/components/snackbar';
+
 export function useAppointments(appliedFilters) {
   const [rows, setRows] = useState([]);
   const [barbers, setBarbers] = useState([]);
@@ -112,6 +114,7 @@ export function useAppointments(appliedFilters) {
       setDetail(response.data?.data || response.data);
     } catch (error) {
       console.error('Error updating appointment status:', error);
+      toast.error(error?.response?.data?.message || 'Error al actualizar el estado de la cita');
     } finally {
       setActionLoading(false);
     }
@@ -127,7 +130,7 @@ export function useAppointments(appliedFilters) {
     detail,
     detailLoading,
     actionLoading,
-    fetchAppointments,
+    refresh: fetchAppointments,
     handleBranchChange,
     handleOpenDetail,
     handleCloseDetail,

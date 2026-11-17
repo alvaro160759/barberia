@@ -32,14 +32,21 @@ export function AppointmentListView() {
     detail,
     detailLoading,
     actionLoading,
+    refresh,
     handleBranchChange,
     handleOpenDetail,
     handleCloseDetail,
     handleNextStatus,
   } = useAppointments(appliedFilters);
 
+  const hasActiveFilters = Object.values(appliedFilters).some(Boolean);
+
   const handleFilterChange = (field) => (event) => {
     setFilters((prev) => ({ ...prev, [field]: event.target.value }));
+  };
+
+  const handleBarberChange = (barberId) => {
+    setFilters((prev) => ({ ...prev, barber_id: barberId }));
   };
 
   const handleApplyFilters = () => {
@@ -49,6 +56,12 @@ export function AppointmentListView() {
   const handleClearFilters = () => {
     setFilters(EMPTY_APPOINTMENT_FILTERS);
     setAppliedFilters(EMPTY_APPOINTMENT_FILTERS);
+  };
+
+  const handleApplyDateRange = ({ from, to }) => {
+    const next = { ...filters, from, to };
+    setFilters(next);
+    setAppliedFilters(next);
   };
 
   const notFound = !rows.length;
@@ -75,8 +88,13 @@ export function AppointmentListView() {
             barbers={barbers}
             filters={filters}
             onFilterChange={handleFilterChange}
+            onBarberChange={handleBarberChange}
             onApplyFilters={handleApplyFilters}
             onClearFilters={handleClearFilters}
+            onApplyDateRange={handleApplyDateRange}
+            hasActiveFilters={hasActiveFilters}
+            count={rows.length}
+            onRefresh={refresh}
           />
 
           <AppointmentTable

@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -13,12 +14,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { AppointmentStatusChip } from './appointment-status-chip';
 import {
-  APPOINTMENT_NEXT_ACTION,
+  APPOINTMENT_ACTIONS,
   formatAppointmentDate,
 } from './appointments-constants';
 
 export function AppointmentDetailDialog({ open, onClose, detail, loading, actionLoading, onNextStatus }) {
-  const nextAction = detail ? APPOINTMENT_NEXT_ACTION[detail.status] : null;
+  const actions = detail ? APPOINTMENT_ACTIONS[detail.status] || [] : [];
+  const [primaryAction, ...secondaryActions] = actions;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -66,15 +68,28 @@ export function AppointmentDetailDialog({ open, onClose, detail, loading, action
           </Stack>
         )}
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ flexWrap: 'wrap', rowGap: 1 }}>
         <Button onClick={onClose}>Cerrar</Button>
-        {nextAction && (
+        <Box sx={{ flex: '1 1 auto' }} />
+        {secondaryActions.map((action) => (
           <Button
-            variant="contained"
+            key={action.status}
+            variant={action.variant}
+            color={action.color}
             disabled={actionLoading}
-            onClick={() => onNextStatus(nextAction.status)}
+            onClick={() => onNextStatus(action.status)}
           >
-            {nextAction.label}
+            {action.label}
+          </Button>
+        ))}
+        {primaryAction && (
+          <Button
+            variant={primaryAction.variant}
+            color={primaryAction.color}
+            disabled={actionLoading}
+            onClick={() => onNextStatus(primaryAction.status)}
+          >
+            {primaryAction.label}
           </Button>
         )}
       </DialogActions>

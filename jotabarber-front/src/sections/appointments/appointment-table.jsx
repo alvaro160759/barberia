@@ -35,7 +35,7 @@ export function AppointmentTable({ rows, table, notFound, onOpenDetail }) {
           </TableHead>
           <TableBody>
             {pagedRows.map((row) => (
-              <TableRow key={row.id} hover>
+              <TableRow key={row.id} hover sx={{ cursor: 'pointer' }} onClick={() => onOpenDetail(row.id)}>
                 <TableCell>{formatAppointmentDate(row.starts_local).split(' ')[0]}</TableCell>
                 <TableCell>{row.starts_local?.split(' ')[1]} – {row.ends_local}</TableCell>
                 <TableCell>

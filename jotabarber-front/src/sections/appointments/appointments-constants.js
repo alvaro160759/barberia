@@ -16,10 +16,21 @@ export const APPOINTMENT_STATUS_COLORS = {
   NO_SHOW: 'default',
 };
 
-export const APPOINTMENT_NEXT_ACTION = {
-  PENDING: { status: 'CONFIRMED', label: 'Confirmar' },
-  CONFIRMED: { status: 'IN_PROGRESS', label: 'Atender' },
-  IN_PROGRESS: { status: 'COMPLETED', label: 'Completar' },
+export const APPOINTMENT_ACTIONS = {
+  PENDING: [
+    { status: 'CONFIRMED', label: 'Confirmar', color: 'primary', variant: 'contained' },
+    { status: 'CANCELLED', label: 'Cancelar cita', color: 'error', variant: 'outlined' },
+    { status: 'NO_SHOW', label: 'No asistió', color: 'warning', variant: 'outlined' },
+  ],
+  CONFIRMED: [
+    { status: 'IN_PROGRESS', label: 'Atender', color: 'primary', variant: 'contained' },
+    { status: 'CANCELLED', label: 'Cancelar cita', color: 'error', variant: 'outlined' },
+    { status: 'NO_SHOW', label: 'No asistió', color: 'warning', variant: 'outlined' },
+  ],
+  IN_PROGRESS: [
+    { status: 'COMPLETED', label: 'Completar', color: 'primary', variant: 'contained' },
+    { status: 'CANCELLED', label: 'Cancelar cita', color: 'error', variant: 'outlined' },
+  ],
 };
 
 export const EMPTY_APPOINTMENT_FILTERS = { from: '', to: '', barber_id: '', status: '' };
