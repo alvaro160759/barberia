@@ -86,6 +86,13 @@ class BarberSchedulesSeeder extends Seeder
         DB::transaction(function () use ($barbers, $branches, $barberSchedules) {
             foreach ($branches as $branchId) {
                 foreach ($barbers as $barberId) {
+                    // Solo crear horario si el barbero está asignado a la sucursal
+                    $assigned = DB::table('employee_branches')
+                        ->where('employee_id', $barberId)
+                        ->where('branch_id', $branchId)
+                        ->exists();
+                    if (!$assigned) continue;
+
                     $schedules = $barberSchedules[$barberId] ?? [];
                     foreach ($schedules as $schedule) {
                         DB::table('barber_schedules')->updateOrInsert(

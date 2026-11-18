@@ -34,7 +34,7 @@ class SaveAppointment {
             $values=['branch_id'=>$branch,'customer_id'=>$d['customer_id'],'barber_id'=>$d['barber_id'],'starts_at'=>$start,'ends_at'=>$end,'notes'=>$d['notes']??null,'updated_at'=>now()];
             if($id){DB::table('appointments')->where('id',$id)->update($values);DB::table('appointment_services')->where('appointment_id',$id)->delete();}
             else $id=Records::insert('appointments',$values+['created_by'=>$user,'status'=>'PENDING']);
-            foreach($services as $s)Records::insert('appointment_services',['appointment_id'=>$id,'branch_id'=>$branch,'service_id'=>$s->service_id,'service_name'=>$s->name,'quoted_price'=>$s->price,'duration_minutes'=>$s->duration_minutes]);
+            foreach($services as $s)Records::insert('appointment_services',['appointment_id'=>$id,'branch_id'=>$branch,'service_id'=>$s->id,'service_name'=>$s->name,'quoted_price'=>$s->price,'duration_minutes'=>$s->duration_minutes]);
             Audit::log($branch,$user,'SAVE','appointments',$id);return DB::table('appointments')->where('id',$id)->first();
         },3);
     }
