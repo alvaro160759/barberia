@@ -30,13 +30,10 @@ class PublicBookingController extends Controller
     public function services(Request $r)
     {
         $d = $r->validate(['branch_id' => 'required|integer|exists:branches,id']);
-        return Api::ok(DB::table('branch_services as bs')
-            ->join('services as s', 's.id', '=', 'bs.service_id')
-            ->where('bs.branch_id', $d['branch_id'])
-            ->where('bs.active', true)
-            ->where('s.active', true)
-            ->select('s.id', 's.name', 'bs.price', 'bs.duration_minutes')
-            ->orderBy('s.name')
+        return Api::ok(DB::table('services')
+            ->where('active', true)
+            ->select('id', 'name', 'price', 'duration_minutes')
+            ->orderBy('name')
             ->get());
     }
     public function schedules(Request $r)
@@ -59,15 +56,12 @@ class PublicBookingController extends Controller
         $durationMinutes = 30;
         if (!empty($d['service_ids'])) {
             $serviceIds = array_values(array_unique(array_map('intval', $d['service_ids'])));
-            $serviceRows = DB::table('branch_services as bs')
-                ->join('services as s', 's.id', '=', 'bs.service_id')
-                ->where('bs.branch_id', $branchId)
-                ->where('bs.active', true)
-                ->where('s.active', true)
-                ->whereIn('s.id', $serviceIds)
-                ->get(['s.id', 'bs.duration_minutes']);
+            $serviceRows = DB::table('services')
+                ->where('active', true)
+                ->whereIn('id', $serviceIds)
+                ->get(['id', 'duration_minutes']);
             if ($serviceRows->count() !== count($serviceIds)) {
-                return Api::error('Hay un servicio no disponible en la sucursal.', 422);
+                return Api::error('Hay un servicio no disponible.', 422);
             }
             $durationMinutes = max(1, (int) $serviceRows->sum('duration_minutes'));
         }

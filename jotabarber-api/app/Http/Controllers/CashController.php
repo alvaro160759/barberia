@@ -4,7 +4,11 @@ use App\Support\{Api,Audit,Cash,Money,Records};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class CashController extends Controller {
-    public function index(Request $r) {return Api::ok(DB::table('cash_sessions')->where('branch_id',$this->branch($r))->orderByDesc('id')->paginate($this->perPage($r)));}
+    public function index(Request $r) {
+        $q=DB::table('cash_sessions')->where('branch_id',$this->branch($r));
+        if($r->filled('status'))$q->where('status',$r->input('status'));
+        return Api::ok($q->orderByDesc('id')->paginate($this->perPage($r)));
+    }
     public function open(Request $r) {
         $d=$r->validate(['cash_register_id'=>'required|integer','opening_amount'=>'required|regex:/^\d{1,8}(\.\d{1,2})?$/']);
         return DB::transaction(function()use($r,$d){
@@ -17,7 +21,15 @@ class CashController extends Controller {
     }
     public function show(Request $r) {
         $s=DB::table('cash_sessions')->where('id',$r->route('id'))->where('branch_id',$this->branch($r))->first();abort_unless($s,404);
-        $s->current_expected_amount=Money::decimal(Cash::expected($s));return Api::ok($s);
+        $cash=DB::table('payment_methods')->where('code','CASH')->value('id');
+        $s->current_expected_amount=Money::decimal(Cash::expected($s));
+        $s->payments=DB::table('payments')->where('cash_session_id',$s->id)->where('payment_method_id',$cash)
+            ->select('id','sale_id','amount','tip_amount','reference','paid_at')->orderByDesc('paid_at')->get();
+        $s->expenses=DB::table('expenses')->where('cash_session_id',$s->id)->where('payment_method_id',$cash)
+            ->select('id','description','amount','spent_at','reference')->orderByDesc('spent_at')->get();
+        $s->settlements=DB::table('commission_settlements')->where('cash_session_id',$s->id)->where('payment_method_id',$cash)->where('status','PAID')
+            ->select('id','barber_id','period_start','period_end','amount','paid_at')->orderByDesc('paid_at')->get();
+        return Api::ok($s);
     }
     public function close(Request $r) {
         $d=$r->validate(['counted_amount'=>'required|regex:/^\d{1,8}(\.\d{1,2})?$/']);

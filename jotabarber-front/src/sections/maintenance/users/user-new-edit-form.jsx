@@ -119,7 +119,7 @@ export function UserNewEditForm({ currentUser }) {
 
       // Verificar si la respuesta tiene success: true
       if (response?.success) {
-        // Redirigir a la lista de usuarios
+        // Redirig ir a la lista de usuarios
         router.push(paths.dashboard.maintenance.users.root);
       }
     } catch (error) {

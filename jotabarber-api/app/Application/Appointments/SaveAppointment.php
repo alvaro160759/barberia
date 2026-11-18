@@ -17,8 +17,8 @@ class SaveAppointment {
                 if(!in_array($old->status,['PENDING','CONFIRMED']))Records::error('status','La cita ya no se puede reprogramar.');}
             $duration=0;$services=[];
             foreach($d['service_ids'] as $serviceId){
-                $s=DB::table('branch_services as bs')->join('services as s','s.id','=','bs.service_id')->where('bs.branch_id',$branch)->where('s.id',$serviceId)->where('bs.active',true)->where('s.active',true)->select('bs.*','s.name')->first();
-                if(!$s)Records::error('service_ids','Hay un servicio no disponible en la sucursal.');
+                $s=DB::table('services')->where('id',$serviceId)->where('active',true)->first();
+                if(!$s)Records::error('service_ids','Hay un servicio no disponible.');
                 $duration+=(int)$s->duration_minutes;$services[]=$s;
             }
             $start=CarbonImmutable::parse($d['starts_at'])->utc();$end=$start->addMinutes($duration);

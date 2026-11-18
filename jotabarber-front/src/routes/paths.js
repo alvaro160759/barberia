@@ -156,10 +156,17 @@ export const paths = {
       },
     },
     sales: {
+      root: `${ROOTS.DASHBOARD}/sales`,
       serviceRegistration: `${ROOTS.DASHBOARD}/sales/service-registration`,
+      cashHistory: `${ROOTS.DASHBOARD}/sales/cash-history`,
+      expenses: `${ROOTS.DASHBOARD}/sales/expenses`,
     },
     appointments: {
       root: `${ROOTS.DASHBOARD}/appointments`,
+    },
+    reports: {
+      commission: `${ROOTS.DASHBOARD}/reports/commission`,
+      incomeExpense: `${ROOTS.DASHBOARD}/reports/income-expense`,
     },
     general: {
       app: `${ROOTS.DASHBOARD}/app`,

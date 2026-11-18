@@ -111,9 +111,9 @@ export function BranchListView() {
         {loading ? (
           <SplashScreen />
         ) : (
-          <Card>
+          <>
             <BranchTableToolbar onRefresh={fetchBranches} />
-
+            <Card>
             <Box sx={{ position: 'relative' }}>
               <TableSelectedAction
                 dense={table.dense}
@@ -185,6 +185,7 @@ export function BranchListView() {
               onRowsPerPageChange={table.onChangeRowsPerPage}
             />
           </Card>
+          </>
         )}
       </DashboardContent>
 

@@ -25,14 +25,14 @@ class CreateSale {
             }
             $serviceRows=[];$productRows=[];$subtotal=0;$discounts=0;
             foreach($services as $line){
-                $s=DB::table('branch_services as bs')->join('services as s','s.id','=','bs.service_id')->where('bs.branch_id',$branch)->where('bs.service_id',$line['service_id'])->where('bs.active',true)->where('s.active',true)->select('bs.*','s.name')->first();
+                $s=DB::table('services')->where('id',$line['service_id'])->where('active',true)->first();
                 if(!$s)Records::error('services','Servicio no disponible.');
                 $rate=DB::table('barber_service_rates')->where('branch_id',$branch)->where('employee_id',$line['barber_id'])->where('service_id',$line['service_id'])->where('active',true)->first();
                 $qty=(int)$line['quantity'];$price=Money::cents((string)$s->price);$discount=Money::cents((string)($line['discount_amount']??'0'));
                 $net=$qty*$price-$discount;if($net<0)Records::error('discount_amount','El descuento supera el importe del servicio.');
-                $barberPercent=(string)($rate?->barber_percentage??$s->barber_percentage);$ownerPercent=(string)($rate?->owner_percentage??$s->owner_percentage);
+                $barberPercent=(string)($rate?->barber_percentage??$s->commission_percentage);$ownerPercent=(string)(100-$barberPercent);
                 $barberAmount=Money::share($net,$barberPercent);$subtotal+=$qty*$price;$discounts+=$discount;
-                $serviceRows[]=['branch_id'=>$branch,'service_id'=>$s->service_id,'barber_id'=>$line['barber_id'],'service_name'=>$s->name,'quantity'=>$qty,'unit_price'=>Money::decimal($price),'discount_amount'=>Money::decimal($discount),'net_amount'=>Money::decimal($net),'barber_percentage'=>$barberPercent,'owner_percentage'=>$ownerPercent,'barber_amount'=>Money::decimal($barberAmount),'owner_amount'=>Money::decimal($net-$barberAmount)];
+                $serviceRows[]=['branch_id'=>$branch,'service_id'=>$s->id,'barber_id'=>$line['barber_id'],'service_name'=>$s->name,'quantity'=>$qty,'unit_price'=>Money::decimal($price),'discount_amount'=>Money::decimal($discount),'net_amount'=>Money::decimal($net),'barber_percentage'=>$barberPercent,'owner_percentage'=>$ownerPercent,'barber_amount'=>Money::decimal($barberAmount),'owner_amount'=>Money::decimal($net-$barberAmount)];
             }
             // Bloqueo de stock por orden de producto para ventas concurrentes.
             usort($products,fn($a,$b)=>$a['product_id']<=>$b['product_id']);

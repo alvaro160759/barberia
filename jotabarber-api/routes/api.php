@@ -11,6 +11,7 @@ use App\Http\Controllers\{
     CommissionController,
     EmployeeController,
     ExpenseController,
+    IncomeExpenseReportController,
     InventoryController,
     PublicBookingController,
     ReportController,
@@ -186,7 +187,7 @@ Route::middleware(['auth:sanctum', 'active', 'branch'])->group(function () {
             ->whereNumber('id')
             ->name('destroy');
         Route::post('assign', [EmployeeController::class, 'assign'])
-            ->middleware('permission:users.manage')
+            ->middleware('permission:employees.manage')
             ->name('assign');
     });
 
@@ -334,6 +335,11 @@ Route::middleware(['auth:sanctum', 'active', 'branch'])->group(function () {
             ->middleware('permission:expenses.manage')
             ->name('store');
     });
+
+    // Income Expense Report
+    Route::get('/income-expense-report', [IncomeExpenseReportController::class, 'index'])
+        ->middleware('permission:reports.view')
+        ->name('income-expense-report');
 
     // Commissions
     Route::prefix('commissions')->name('commissions.')->group(function () {

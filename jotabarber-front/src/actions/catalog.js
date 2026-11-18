@@ -35,4 +35,15 @@ export const catalogApi = {
   createCustomer: (data) => axios.post(endpoints.catalog.customers, data),
   updateCustomer: (id, data) => axios.put(`${endpoints.catalog.customers}/${id}`, data),
   deleteCustomer: (id) => axios.delete(`${endpoints.catalog.customers}/${id}`),
+
+  // Métodos de pago
+  getPaymentMethods: (params) => axios.get(endpoints.catalog.paymentMethods, { params }),
+
+  // Cajas registradoras
+  getCashRegisters: (params) => axios.get('/api/catalog/cash-registers', { params }),
+  // Categorías de egresos
+  getExpenseCategories: (params) => axios.get('/api/catalog/expense-categories', { params }),
+
+  // DNI público
+  getDni: (dni) => axios.get(endpoints.public.dni(dni)),
 };

@@ -41,6 +41,7 @@ const TABLE_HEAD = [
   { id: 'first_name', label: 'Nombre' },
   { id: 'last_name', label: 'Apellido' },
   { id: 'job_type', label: 'Cargo' },
+  { id: 'branch_name', label: 'Sucursal' },
   { id: 'phone', label: 'Teléfono' },
   { id: 'active', label: 'Estado', width: 80 },
   { id: '', width: 88 },
@@ -57,7 +58,7 @@ export function EmployeeListView() {
 
   useEffect(() => {
     const loadData = async () => {
-      await fetchEmployees();
+      await fetchEmployees({ all: true });
     };
     loadData();
   }, [fetchEmployees]);

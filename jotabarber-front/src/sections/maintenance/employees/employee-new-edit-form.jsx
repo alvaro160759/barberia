@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -10,9 +10,11 @@ import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 import { useEmployees } from 'src/hooks/use-employees';
+import { useBranches } from 'src/hooks/use-branches';
 
 export function EmployeeNewEditForm({ currentEmployee, onSuccess }) {
   const { createEmployee, updateEmployee, loading } = useEmployees();
+  const { branches, fetchBranches } = useBranches();
 
   const [formData, setFormData] = useState({
     first_name: currentEmployee?.first_name || '',
@@ -22,8 +24,13 @@ export function EmployeeNewEditForm({ currentEmployee, onSuccess }) {
     document_number: currentEmployee?.document_number || '',
     phone: currentEmployee?.phone || '',
     email: currentEmployee?.email || '',
+    branch_id: currentEmployee?.assigned_branch_id || '',
     active: currentEmployee?.active ?? true,
   });
+
+  useEffect(() => {
+    fetchBranches();
+  }, [fetchBranches]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -97,6 +104,22 @@ export function EmployeeNewEditForm({ currentEmployee, onSuccess }) {
               value={formData.document_number}
               onChange={(e) => setFormData({ ...formData, document_number: e.target.value })}
             />
+          </Grid>
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              select
+              label="Sucursal"
+              value={formData.branch_id}
+              onChange={(e) => setFormData({ ...formData, branch_id: e.target.value })}
+              required
+            >
+              {branches.map((branch) => (
+                <MenuItem key={branch.id} value={branch.id}>
+                  {branch.name}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
           <Grid xs={12} md={6}>
             <TextField

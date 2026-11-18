@@ -4,14 +4,13 @@ use App\Support\{Api,Audit,Records};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class BranchCatalogController extends Controller {
-    public function services(Request $r) {return Api::ok(DB::table('branch_services as bs')->join('services as s','s.id','=','bs.service_id')->where('bs.branch_id',$this->branch($r))->select('bs.*','s.name','s.code')->orderBy('s.name')->paginate($this->perPage($r)));}
+    public function services(Request $r) {return Api::ok(DB::table('services')->where('active',true)->orderBy('name')->paginate($this->perPage($r)));}
     public function saveService(Request $r) {
         $d=$r->validate(['service_id'=>'required|integer','price'=>'required|regex:/^\d{1,8}(\.\d{1,2})?$/','duration_minutes'=>'required|integer|min:1|max:600','barber_percentage'=>'required|numeric|min:0|max:100|decimal:0,2','owner_percentage'=>'required|numeric|min:0|max:100|decimal:0,2','active'=>'sometimes|boolean']);
         Records::active('services',(int)$d['service_id']);
         if(bccomp(bcadd((string)$d['barber_percentage'],(string)$d['owner_percentage'],2),'100.00',2)!==0)Records::error('barber_percentage','Los porcentajes deben sumar 100.');
-        $key=['branch_id'=>$this->branch($r),'service_id'=>$d['service_id']];
-        DB::table('branch_services')->upsert([$key+$d+['created_at'=>now(),'updated_at'=>now()]],['branch_id','service_id'],['price','duration_minutes','barber_percentage','owner_percentage','active','updated_at']);
-        return Api::ok(DB::table('branch_services')->where($key)->first());
+        DB::table('services')->where('id',$d['service_id'])->update(['price'=>$d['price'],'updated_at'=>now()]);
+        return Api::ok(DB::table('services')->where('id',$d['service_id'])->first());
     }
     public function products(Request $r) {return Api::ok(DB::table('branch_products as bp')->join('products as p','p.id','=','bp.product_id')->where('bp.branch_id',$this->branch($r))->select('bp.*','p.name','p.sku')->orderBy('p.name')->paginate($this->perPage($r)));}
     public function saveProduct(Request $r) {

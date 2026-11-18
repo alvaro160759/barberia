@@ -1,18 +1,22 @@
 import { useState, useEffect } from 'react';
 
-import { Grid, Container } from '@mui/material';
+import { Grid, Container, Stack } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useServices } from 'src/hooks/use-services';
+import { useProducts } from 'src/hooks/use-products';
 import { useEmployees } from 'src/hooks/use-employees';
 import { useCustomers } from 'src/hooks/use-customers';
 
 import { useSettingsContext } from 'src/components/settings';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { toast } from 'src/components/snackbar';
 
-import { SummaryCard } from './components/summary-card';
+import { catalogApi } from 'src/actions/catalog';
+import { salesApi } from 'src/actions/sales';
+
 import { ClientSelectionCard } from './components/client-selection-card';
 import { BarberSelectionCard } from './components/barber-selection-card';
 import { ServiceSelectionCard } from './components/service-selection-card';
@@ -20,15 +24,18 @@ import { ServiceSelectionCard } from './components/service-selection-card';
 export function ServiceRegistrationView() {
   const settings = useSettingsContext();
   const router = useRouter();
-  const { services, fetchServices } = useServices();
-  const { employees, fetchEmployees } = useEmployees();
-  const { customers, fetchCustomers } = useCustomers();
+  const { services, loading: servicesLoading, fetchServices } = useServices();
+  const { products, loading: productsLoading, fetchProducts } = useProducts();
+  const { employees, loading: employeesLoading, fetchEmployees } = useEmployees();
+  const { customers, fetchCustomers, createCustomer } = useCustomers();
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [openCashSession, setOpenCashSession] = useState(null);
+  const [registering, setRegistering] = useState(false);
 
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedBarber, setSelectedBarber] = useState(null);
-  const [selectedService, setSelectedService] = useState(null);
-  const [addedServices, setAddedServices] = useState([]);
-  const [serviceSearch, setServiceSearch] = useState('');
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [addedItems, setAddedItems] = useState([]);
   const [clientSearch, setClientSearch] = useState('');
   const [discountPercent, setDiscountPercent] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
@@ -38,22 +45,150 @@ export function ServiceRegistrationView() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        await Promise.all([fetchServices(), fetchEmployees(), fetchCustomers()]);
+        const [methodsRes, cashRes] = await Promise.all([
+          catalogApi.getPaymentMethods({ per_page: 100 }),
+          salesApi.getCashSessions({ per_page: 100 }),
+          fetchServices(),
+          fetchProducts(),
+          fetchEmployees(),
+          fetchCustomers(),
+        ]);
+        const methodsData = methodsRes?.data?.data?.data || methodsRes?.data?.data || methodsRes?.data || [];
+        setPaymentMethods(Array.isArray(methodsData) ? methodsData : []);
+        const sessionsData = cashRes?.data?.data?.data || cashRes?.data?.data || cashRes?.data || [];
+        const sessions = Array.isArray(sessionsData) ? sessionsData : [];
+        setOpenCashSession(sessions.find((s) => s.status === 'OPEN') || null);
       } catch (error) {
         console.error('Error loading data:', error);
       }
     };
     loadData();
-  }, [fetchServices, fetchEmployees, fetchCustomers]);
+  }, [fetchServices, fetchProducts, fetchEmployees, fetchCustomers]);
 
-  const handleRegisterService = () => {
-    console.log('Registrando servicio:', {
-      client: selectedClient,
-      barber: selectedBarber,
-      services: addedServices,
-      paymentMethod,
-      notes
+  const getItemPrice = (item) => (typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0);
+
+  const buildSalePayload = async () => {
+    // Resolver customer_id: si el cliente no tiene id (viene de apiperu), buscarlo por documento en la lista local
+    let customerId = selectedClient?.id ?? null;
+    if (selectedClient && !customerId && selectedClient.document_number) {
+      // Buscar si ya existe en la lista local de clientes por documento
+      const existingLocal = customers.find(
+        (c) => c.document_number === selectedClient.document_number
+      );
+      if (existingLocal) {
+        customerId = existingLocal.id;
+      } else {
+        // No existe localmente, crearlo
+        const response = await createCustomer({
+          document_type: selectedClient.document_type || 'DNI',
+          document_number: selectedClient.document_number || null,
+          first_name: selectedClient.first_name || selectedClient.full_name?.split(' ')[0] || 'Cliente',
+          last_name: selectedClient.last_name || selectedClient.full_name?.split(' ').slice(1).join(' ') || null,
+          phone: selectedClient.phone || null,
+          email: selectedClient.email || null,
+        });
+        const created = response?.data?.data || response?.data || response;
+        customerId = created?.id ?? null;
+      }
+    }
+
+    // Calcular descuento total (misma lógica que la tabla)
+    const subtotal = addedItems.reduce((sum, s) => sum + getItemPrice(s) * (s.quantity || 1), 0);
+    const discountPercentValue = typeof discountPercent === 'number' ? discountPercent : parseFloat(discountPercent) || 0;
+    const discountAmountValue = typeof discountAmount === 'number' ? discountAmount : parseFloat(discountAmount) || 0;
+    const finalDiscount = Math.min(Math.max(subtotal * (discountPercentValue / 100), discountAmountValue), subtotal);
+
+    // Repartir el descuento proporcionalmente entre las líneas (en centavos)
+    const lines = addedItems.map((item) => ({
+      item,
+      qty: item.quantity || 1,
+      priceCents: Math.round(getItemPrice(item) * 100),
+    }));
+    const subtotalCents = lines.reduce((sum, l) => sum + l.priceCents * l.qty, 0);
+    const discountCents = Math.min(Math.round(finalDiscount * 100), subtotalCents);
+    let allocatedCents = 0;
+
+    const serviceLines = [];
+    const productLines = [];
+    lines.forEach((line, index) => {
+      const lineCents = line.priceCents * line.qty;
+      let lineDiscountCents;
+      if (index === lines.length - 1) {
+        lineDiscountCents = discountCents - allocatedCents;
+      } else {
+        lineDiscountCents = subtotalCents > 0 ? Math.floor((discountCents * lineCents) / subtotalCents) : 0;
+        allocatedCents += lineDiscountCents;
+      }
+      const discountAmount = (lineDiscountCents / 100).toFixed(2);
+      if (line.item.itemType === 'product') {
+        productLines.push({ product_id: line.item.id, quantity: line.qty, discount_amount: discountAmount });
+      } else {
+        serviceLines.push({ service_id: line.item.id, barber_id: selectedBarber.id, quantity: line.qty, discount_amount: discountAmount });
+      }
     });
+
+    return {
+      operation_key: crypto.randomUUID(),
+      customer_id: customerId,
+      notes: notes || null,
+      services: serviceLines,
+      products: productLines,
+    };
+  };
+
+  const handleRegisterService = async () => {
+    if (addedItems.length === 0) {
+      toast.warning('Agrega al menos un servicio o producto');
+      return;
+    }
+    const hasServices = addedItems.some((i) => i.itemType !== 'product');
+    if (hasServices && !selectedBarber?.id) {
+      toast.warning('Selecciona un barbero para los servicios');
+      return;
+    }
+    const paymentMethodRow = paymentMethods.find((m) => (m.code || '').toUpperCase() === (paymentMethod || '').toUpperCase());
+    if (!paymentMethodRow?.id) {
+      toast.error('No se encontró el método de pago seleccionado');
+      return;
+    }
+    if (paymentMethodRow.code === 'CASH' && !openCashSession?.id) {
+      toast.error('No hay una caja de efectivo abierta. Ábrela antes de cobrar en efectivo.');
+      return;
+    }
+
+    setRegistering(true);
+    try {
+      const payload = await buildSalePayload();
+      const saleResponse = await salesApi.create(payload);
+      const sale = saleResponse?.data?.data || saleResponse?.data;
+      const saleId = sale?.id;
+      if (!saleId) {
+        toast.error('No se pudo registrar la venta');
+        return;
+      }
+
+      await salesApi.registerPayment(saleId, {
+        operation_key: crypto.randomUUID(),
+        payment_method_id: paymentMethodRow.id,
+        cash_session_id: paymentMethodRow.code === 'CASH' ? openCashSession?.id ?? null : null,
+        amount: Number(sale.total_amount ?? 0).toFixed(2),
+      });
+
+      toast.success(`Venta registrada correctamente (Total: S/ ${Number(sale.total_amount ?? 0).toFixed(2)})`);
+
+      // Reset del formulario
+      setAddedItems([]);
+      setSelectedItem(null);
+      setSelectedClient(null);
+      setSelectedBarber(null);
+      setDiscountPercent(0);
+      setDiscountAmount(0);
+      setNotes('');
+    } catch (err) {
+      toast.error(err?.message || 'Error al registrar la venta');
+    } finally {
+      setRegistering(false);
+    }
   };
 
   const handleCancel = () => {
@@ -69,50 +204,45 @@ export function ServiceRegistrationView() {
           { name: 'Servicios', href: paths.dashboard.maintenance.services.root },
           { name: 'Registrar servicio' },
         ]}
-        sx={{ mb: { xs: 3, md: 5 } }}
+        sx={{ mb: { xs: 3, md: 3 } }}
       />
 
-      <Grid container spacing={1}>
-        <Grid item xs={12} md={6}>
-          <ClientSelectionCard
-            selectedClient={selectedClient}
-            setSelectedClient={setSelectedClient}
-            clientSearch={clientSearch}
-            setClientSearch={setClientSearch}
-          />
+      <Grid container spacing={1} sx={{ mb: { xs: 3, md: 5 } }}>
+        <Grid item xs={12} md={5}>
+          <Stack spacing={1}>
+            <ClientSelectionCard
+              selectedClient={selectedClient}
+              setSelectedClient={setSelectedClient}
+              clientSearch={clientSearch}
+              setClientSearch={setClientSearch}
+            />
+            <BarberSelectionCard
+              employees={employees}
+              loading={employeesLoading}
+              selectedBarber={selectedBarber}
+              setSelectedBarber={setSelectedBarber}
+            />
+          </Stack>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <BarberSelectionCard
-            employees={employees}
-            selectedBarber={selectedBarber}
-            setSelectedBarber={setSelectedBarber}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={7}>
           <ServiceSelectionCard
             services={services}
-            addedServices={addedServices}
-            setAddedServices={setAddedServices}
-            selectedService={selectedService}
-            setSelectedService={setSelectedService}
-            serviceSearch={serviceSearch}
-            setServiceSearch={setServiceSearch}
+            servicesLoading={servicesLoading}
             fetchServices={fetchServices}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <SummaryCard
-            addedServices={addedServices}
+            products={products}
+            productsLoading={productsLoading}
+            fetchProducts={fetchProducts}
+            addedItems={addedItems}
+            setAddedItems={setAddedItems}
+            selectedItem={selectedItem}
+            setSelectedItem={setSelectedItem}
             discountPercent={discountPercent}
             setDiscountPercent={setDiscountPercent}
             discountAmount={discountAmount}
             setDiscountAmount={setDiscountAmount}
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
-            notes={notes}
-            setNotes={setNotes}
             onRegisterService={handleRegisterService}
             onCancel={handleCancel}
+            registering={registering}
           />
         </Grid>
       </Grid>

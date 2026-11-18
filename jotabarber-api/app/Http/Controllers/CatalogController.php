@@ -89,6 +89,15 @@ class CatalogController extends Controller {
     public function update(Request $r) {return $this->save($r,true);}
     private function save(Request $r,bool $update) {
         $d=$this->definition($r);$data=$r->validate($d['rules']);
+
+        // Validar documento duplicado en clientes
+        if($d['table']==='customers' && !empty($data['document_number'])){
+            $existsQuery=DB::table('customers')->where('document_number',$data['document_number'])->where('active',true);
+            if($update)$existsQuery->where('id','!=',(int)$r->route('id'));
+            if($existsQuery->exists()){
+                return Api::error('Ya existe un cliente registrado con ese número de documento.',409);
+            }
+        }
         
         // Generar SKU automáticamente solo al crear, no al actualizar
         if(!$update && $d['table']==='products' && empty($data['sku'])) {

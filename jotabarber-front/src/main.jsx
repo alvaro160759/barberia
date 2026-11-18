@@ -5,6 +5,7 @@ import { HelmetProvider } from 'react-helmet-async';
 
 import App from './app';
 import { CONFIG } from './config-global';
+import { ReduxProvider } from './redux/redux-provider';
 
 // ----------------------------------------------------------------------
 
@@ -12,12 +13,14 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <StrictMode>
-    <HelmetProvider>
-      <BrowserRouter basename={CONFIG.site.basePath}>
-        <Suspense>
-          <App />
-        </Suspense>
-      </BrowserRouter>
-    </HelmetProvider>
+    <ReduxProvider>
+      <HelmetProvider>
+        <BrowserRouter basename={CONFIG.site.basePath}>
+          <Suspense>
+            <App />
+          </Suspense>
+        </BrowserRouter>
+      </HelmetProvider>
+    </ReduxProvider>
   </StrictMode>
 );

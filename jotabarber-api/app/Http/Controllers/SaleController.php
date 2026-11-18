@@ -1,13 +1,29 @@
 <?php
 namespace App\Http\Controllers;
 use App\Application\Sales\{CreateSale,RegisterPayment,CancelSale};
-use App\Support\{Api,Money};
+use App\Support\{Access,Api,Money};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class SaleController extends Controller {
     public function index(Request $r) {
-        $q=DB::table('sales')->where('branch_id',$this->branch($r));if($r->filled('status'))$q->where('status',$r->query('status'));
-        return Api::ok($q->orderByDesc('id')->paginate($this->perPage($r)));
+        $q=DB::table('sales as s')
+            ->leftJoin('customers as c','c.id','=','s.customer_id')
+            ->leftJoin('sale_services as ss','ss.sale_id','=','s.id')
+            ->leftJoin('employees as e','e.id','=','ss.barber_id')
+            ->select('s.id','s.number','s.sold_at','s.status','s.total_amount','s.subtotal_amount','s.discount_amount','s.customer_id','c.first_name as customer_first_name','c.last_name as customer_last_name','c.document_number as customer_document',DB::raw('MAX(e.first_name) as barber_first_name'),DB::raw('MAX(e.last_name) as barber_last_name'))
+            ->selectSub(DB::table('sale_services')->whereColumn('sale_id','s.id')->selectRaw('COUNT(*)'),'services_count')
+            ->selectSub(DB::table('sale_products')->whereColumn('sale_id','s.id')->selectRaw('COUNT(*)'),'products_count')
+            ->groupBy('s.id','s.number','s.sold_at','s.status','s.total_amount','s.subtotal_amount','s.discount_amount','s.customer_id','c.first_name','c.last_name','c.document_number');
+        if($r->filled('branch_id')){
+            Access::require($this->user($r),$this->branch($r),'reports.global');
+            $q->where('s.branch_id',(int)$r->input('branch_id'));
+        }else{
+            $q->where('s.branch_id',$this->branch($r));
+        }
+        if($r->filled('from'))$q->where('s.sold_at','>=',$r->input('from'));
+        if($r->filled('to'))$q->where('s.sold_at','<=',$r->input('to').' 23:59:59');
+        if($r->filled('status'))$q->where('s.status',$r->query('status'));
+        return Api::ok($q->orderByDesc('s.id')->paginate($this->perPage($r)));
     }
     public function show(Request $r) {
         $s=DB::table('sales')->where('id',$r->route('id'))->where('branch_id',$this->branch($r))->first();abort_unless($s,404);

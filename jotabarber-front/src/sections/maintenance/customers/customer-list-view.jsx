@@ -49,7 +49,7 @@ export function CustomerListView() {
       await fetchCustomers();
     };
     loadData();
-  }, [fetchCustomers]);
+  }, []);
 
   useEffect(() => {
     setTableData(customers);
@@ -65,7 +65,7 @@ export function CustomerListView() {
 
   const dataFiltered = tableData;
   const notFound = !dataFiltered.length;
-
+  
   return (
     <DashboardContent>
       <CustomBreadcrumbs
@@ -86,7 +86,7 @@ export function CustomerListView() {
         }
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-
+      
       {loading ? (
         <SplashScreen />
       ) : (

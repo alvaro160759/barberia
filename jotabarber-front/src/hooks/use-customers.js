@@ -1,109 +1,117 @@
-import { useState, useCallback } from 'react';
-
-import { catalogApi } from 'src/actions/catalog';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { useCallback } from 'react';
 import { toast } from 'src/components/snackbar';
+import { catalogApi } from 'src/actions/catalog';
+import { clearCurrentCustomer, setListaClientes, setCliente, setLoading, setError } from 'src/redux/slices/customersSlice';
 
 export function useCustomers() {
-  const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { customers, currentCustomer, loading, error } = useSelector((state) => state.customers);
 
-  const fetchCustomers = useCallback(async (params) => {
-    setLoading(true);
-    setError(null);
+  const fetchCustomersData = useCallback(async (params) => {
+    dispatch(setLoading(true));
+    dispatch(setError(null));
     try {
       const response = await catalogApi.getCustomers(params);
       const data = response.data?.data?.data || response.data?.data || response.data || [];
-      setCustomers(Array.isArray(data) ? data : []);
+      dispatch(setListaClientes(Array.isArray(data) ? data : []));
       return data;
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Error al cargar clientes';
-      setError(errorMessage);
+      dispatch(setError(errorMessage));
       toast.error(errorMessage);
       throw err;
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
-  }, []);
+  }, [dispatch]);
 
-  const fetchCustomer = useCallback(async (id) => {
-    setLoading(true);
-    setError(null);
+  const fetchCustomerData = useCallback(async (id) => {
+    dispatch(setLoading(true));
+    dispatch(setError(null));
     try {
       const response = await catalogApi.getCustomer(id);
-      return response.data?.data || response.data;
+      const data = response.data?.data || response.data;
+      dispatch(setCliente(data));
+      return data;
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Error al cargar cliente';
-      setError(errorMessage);
+      dispatch(setError(errorMessage));
       toast.error(errorMessage);
       throw err;
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
-  }, []);
+  }, [dispatch]);
 
-  const createCustomer = useCallback(async (data) => {
-    setLoading(true);
-    setError(null);
+  const createCustomerData = useCallback(async (data) => {
+    dispatch(setLoading(true));
+    dispatch(setError(null));
     try {
       const response = await catalogApi.createCustomer(data);
-      await fetchCustomers();
+      await fetchCustomersData();
       toast.success('Cliente creado correctamente');
       return response.data;
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Error al crear cliente';
-      setError(errorMessage);
+      const errorMessage = err?.message || 'Error al crear cliente';
+      dispatch(setError(errorMessage));
       toast.error(errorMessage);
       throw err;
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
-  }, [fetchCustomers]);
+  }, [dispatch, fetchCustomersData]);
 
-  const updateCustomer = useCallback(async (id, data) => {
-    setLoading(true);
-    setError(null);
+  const updateCustomerData = useCallback(async (id, data) => {
+    dispatch(setLoading(true));
+    dispatch(setError(null));
     try {
       const response = await catalogApi.updateCustomer(id, data);
-      await fetchCustomers();
+      await fetchCustomersData();
+      await fetchCustomerData(id);
       toast.success('Cliente actualizado correctamente');
       return response.data;
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Error al actualizar cliente';
-      setError(errorMessage);
+      dispatch(setError(errorMessage));
       toast.error(errorMessage);
       throw err;
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
-  }, [fetchCustomers]);
+  }, [dispatch, fetchCustomersData, fetchCustomerData]);
 
-  const deleteCustomer = useCallback(async (id) => {
-    setLoading(true);
-    setError(null);
+  const deleteCustomerData = useCallback(async (id) => {
+    dispatch(setLoading(true));
+    dispatch(setError(null));
     try {
       await catalogApi.deleteCustomer(id);
-      await fetchCustomers();
+      await fetchCustomersData();
       toast.success('Cliente eliminado correctamente');
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Error al eliminar cliente';
-      setError(errorMessage);
+      dispatch(setError(errorMessage));
       toast.error(errorMessage);
       throw err;
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
-  }, [fetchCustomers]);
+  }, [dispatch, fetchCustomersData]);
+
+  const clearCurrent = useCallback(() => {
+    dispatch(clearCurrentCustomer());
+  }, [dispatch]);
 
   return {
     customers,
+    currentCustomer,
     loading,
     error,
-    fetchCustomers,
-    fetchCustomer,
-    createCustomer,
-    updateCustomer,
-    deleteCustomer,
+    fetchCustomers: fetchCustomersData,
+    fetchCustomer: fetchCustomerData,
+    createCustomer: createCustomerData,
+    updateCustomer: updateCustomerData,
+    deleteCustomer: deleteCustomerData,
+    clearCurrentCustomer: clearCurrent,
   };
 }

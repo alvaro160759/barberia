@@ -13,6 +13,7 @@ export function EmployeeTableRow({ row, onEditRow, onDeleteRow }) {
       <TableCell>{row.first_name}</TableCell>
       <TableCell>{row.last_name}</TableCell>
       <TableCell>{row.job_type}</TableCell>
+      <TableCell>{row.branch_name || '-'}</TableCell>
       <TableCell>{row.phone}</TableCell>
       <TableCell>
         <Label

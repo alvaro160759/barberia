@@ -86,7 +86,12 @@ const ProductsEditPage = lazy(() => import('src/pages/maintenance/products/edit'
 const ServicesListPage = lazy(() => import('src/pages/maintenance/services/index'));
 const ServicesCreatePage = lazy(() => import('src/pages/maintenance/services/create'));
 const ServicesEditPage = lazy(() => import('src/pages/maintenance/services/edit'));
+const SalesListPage = lazy(() => import('src/pages/sales/index'));
 const ServiceRegistrationPage = lazy(() => import('src/pages/sales/service-registration'));
+const CashHistoryPage = lazy(() => import('src/pages/sales/cash-history'));
+const ExpensesPage = lazy(() => import('src/pages/sales/expenses'));
+const CommissionReportPage = lazy(() => import('src/pages/reports/commission'));
+const IncomeExpenseReportPage = lazy(() => import('src/pages/reports/income-expense-report'));
 const AppointmentsPage = lazy(() => import('src/pages/appointments'));
 // Customers
 const CustomersListPage = lazy(() => import('src/pages/maintenance/customers/index'));
@@ -259,7 +264,17 @@ export const dashboardRoutes = [
       {
         path: 'sales',
         children: [
+          { element: <SalesListPage />, index: true },
           { path: 'service-registration', element: <ServiceRegistrationPage /> },
+          { path: 'cash-history', element: <CashHistoryPage /> },
+          { path: 'expenses', element: <ExpensesPage /> },
+        ],
+      },
+      {
+        path: 'reports',
+        children: [
+          { path: 'commission', element: <CommissionReportPage /> },
+          { path: 'income-expense', element: <IncomeExpenseReportPage /> },
         ],
       },
       { path: 'appointments', element: <AppointmentsPage /> },

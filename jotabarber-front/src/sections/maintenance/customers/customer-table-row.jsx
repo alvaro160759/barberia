@@ -9,8 +9,8 @@ import { Iconify } from 'src/components/iconify';
 
 export function CustomerTableRow({ row, selected, onSelectRow, onEditRow, onDeleteRow }) {
   return (
-    <TableRow hover selected={selected}>
-      <TableCell component="th" scope="row" padding="none">
+    <TableRow >
+      <TableCell component="th" scope="row">
         <Stack direction="row" alignItems="center" spacing={2}>
           <Typography variant="subtitle2" noWrap>
             {row.first_name}

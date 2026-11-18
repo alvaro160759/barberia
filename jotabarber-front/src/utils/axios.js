@@ -83,5 +83,17 @@ export const endpoints = {
     serviceCategories: '/api/catalog/service-categories',
     productCategories: '/api/catalog/product-categories',
     customers: '/api/catalog/customers',
+    paymentMethods: '/api/catalog/payment-methods',
+  },
+  sales: {
+    root: '/api/sales',
+    detail: (id) => `/api/sales/${id}`,
+    payment: (id) => `/api/sales/${id}/payments`,
+  },
+  cashSessions: '/api/cash-sessions',
+  expenses: '/api/expenses',
+  incomeExpenseReport: '/api/income-expense-report',
+  public: {
+    dni: (dni) => `/api/public/dni/${dni}`,
   },
 };

@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(['active' => ActiveUser::class, 'branch' => BranchContext::class, 'permission' => RequirePermission::class]);
         $middleware->throttleApi();
         $middleware->validateCsrfTokens(except: [
-            'api/auth/*',
+            'api/*',
             'sanctum/csrf-cookie',
         ]);
     })

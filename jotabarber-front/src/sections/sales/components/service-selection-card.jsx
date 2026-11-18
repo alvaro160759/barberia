@@ -1,102 +1,238 @@
-import { Box, Card, Stack, Table, Button, TableRow, TableBody, TableCell, TableHead, TextField, Typography, IconButton, Autocomplete, TableContainer } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+
+import { Avatar, Box, Button, Card, Skeleton, Stack, Tab, Tabs, TextField, Typography, Autocomplete } from '@mui/material';
 
 import { Iconify } from 'src/components/iconify';
+import { toast } from 'src/components/snackbar';
 
-export function ServiceSelectionCard({ services, addedServices, setAddedServices, selectedService, setSelectedService, serviceSearch, setServiceSearch, fetchServices }) {
-  const handleAddService = (service) => {
-    if (!addedServices.find(s => s.id === service.id)) {
-      setAddedServices([...addedServices, { ...service, quantity: 1 }]);
+import { ItemsTable } from './items-table';
+
+const getPrice = (item) => (typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0);
+const getStock = (item) => (typeof item.stock === 'number' ? item.stock : parseInt(item.stock, 10) || 0);
+
+export function ServiceSelectionCard({
+  services,
+  servicesLoading,
+  fetchServices,
+  products,
+  productsLoading,
+  fetchProducts,
+  addedItems,
+  setAddedItems,
+  selectedItem,
+  setSelectedItem,
+  discountPercent,
+  setDiscountPercent,
+  discountAmount,
+  setDiscountAmount,
+  onRegisterService,
+  onCancel,
+  registering,
+}) {
+  const [itemTab, setItemTab] = useState('services');
+  const isProductTab = itemTab === 'products';
+
+  const catalogOptions = isProductTab ? products : services;
+  const catalogLoading = isProductTab ? productsLoading : servicesLoading;
+  const catalogFetch = isProductTab ? fetchProducts : fetchServices;
+
+  const hasLoadedRef = useRef(false);
+  const wasLoadingRef = useRef(false);
+
+  useEffect(() => {
+    if (catalogLoading) {
+      wasLoadingRef.current = true;
+    } else if (wasLoadingRef.current) {
+      hasLoadedRef.current = true;
+      wasLoadingRef.current = false;
     }
+  }, [catalogLoading]);
+
+  const handleTabChange = (event, newValue) => {
+    setItemTab(newValue);
+    setSelectedItem(null);
   };
 
-  const handleRemoveService = (serviceId) => {
-    setAddedServices(addedServices.filter(s => s.id !== serviceId));
+  const handleAddItem = (item) => {
+    const itemType = isProductTab ? 'product' : 'service';
+    if (addedItems.find((i) => i.id === item.id && i.itemType === itemType)) {
+      toast.warning(`Este ${itemType === 'product' ? 'producto' : 'servicio'} ya fue agregado`);
+      return;
+    }
+    if (itemType === 'product' && getStock(item) <= 0) {
+      toast.warning('Este producto no tiene stock disponible');
+      return;
+    }
+    setAddedItems([...addedItems, { ...item, itemType, quantity: 1 }]);
+    setSelectedItem(null);
   };
+
+  const handleRemoveItem = (item) => {
+    setAddedItems(addedItems.filter((i) => !(i.id === item.id && i.itemType === item.itemType)));
+  };
+
+  const handleQuantityChange = (item, delta) => {
+    const maxQty = item.itemType === 'product' ? getStock(item) : Infinity;
+    setAddedItems(
+      addedItems.map((i) =>
+        i.id === item.id && i.itemType === item.itemType
+          ? { ...i, quantity: Math.min(maxQty, Math.max(1, (i.quantity || 1) + delta)) }
+          : i
+      )
+    );
+  };
+
+  const subtotal = addedItems.reduce((sum, s) => sum + getPrice(s) * (s.quantity || 1), 0);
+  const discountPercentValue = typeof discountPercent === 'number' ? discountPercent : parseFloat(discountPercent) || 0;
+  const discountAmountValue = typeof discountAmount === 'number' ? discountAmount : parseFloat(discountAmount) || 0;
+  const calculatedDiscount = subtotal * (discountPercentValue / 100);
+  const finalDiscount = Math.max(calculatedDiscount, discountAmountValue);
+  const total = subtotal - finalDiscount;
 
   return (
-    <Card sx={{ p: 3, mb: 3, minHeight: 232, display: 'flex', flexDirection: 'column' }}>
-      <Typography variant="h6" gutterBottom>
-        Agregar Servicios
-      </Typography>
+    <>
+    <Card sx={{ p: 3, mb: 3, display: 'flex', flexDirection: 'column',minHeight: 450 }}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
+        <Typography variant="h6">
+          Agregar Items
+        </Typography>
+        <Tabs value={itemTab} onChange={handleTabChange} sx={{ minHeight: 36 }}>
+          <Tab value="services" label="Servicios" icon={<Iconify icon="solar:scissors-bold" width={16} />} iconPosition="start" sx={{ minHeight: 36, textTransform: 'none' }} />
+          <Tab value="products" label="Productos" icon={<Iconify icon="mingcute:shopping-bag-2-line" width={16} />} iconPosition="start" sx={{ minHeight: 36, textTransform: 'none' }} />
+        </Tabs>
+      </Stack>
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
         <Autocomplete
+          key={itemTab}
           fullWidth
-          options={services}
+          options={catalogOptions}
+          loading={catalogLoading}
           getOptionLabel={(option) => option.name || ''}
-          value={selectedService}
+          isOptionEqualToValue={(option, value) => option.id === value?.id && option.itemType === value?.itemType}
+          value={selectedItem}
           onChange={(e, value) => {
             if (typeof value === 'string') {
-              setSelectedService(null);
-              setServiceSearch(value);
-            } else if (value) {
-              setSelectedService(value);
+              setSelectedItem(null);
             } else {
-              setSelectedService(null);
+              setSelectedItem(value);
             }
           }}
           onInputChange={(e, value) => {
             if (value) {
-              fetchServices({ search: value });
+              catalogFetch({ search: value });
             }
           }}
+          renderOption={(props, option) => (
+            <Box
+              component="li"
+              {...props}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                py: 1,
+                '&:hover': { bgcolor: 'action.hover' },
+              }}
+            >
+              <Avatar
+                variant="rounded"
+                sx={{
+                  width: 36,
+                  height: 36,
+                  bgcolor: 'primary.lighter',
+                  color: 'primary.main',
+                  flexShrink: 0,
+                }}
+              >
+                <Iconify icon={isProductTab ? 'mingcute:shopping-bag-2-line' : 'solar:scissors-bold'} width={20} />
+              </Avatar>
+              <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                <Typography variant="body2" fontWeight={600} noWrap>
+                  {option.name}
+                </Typography>
+                {option.description && (
+                  <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>
+                    {option.description}
+                  </Typography>
+                )}
+                {isProductTab && (
+                  <Typography variant="caption" color={getStock(option) > 0 ? 'success.main' : 'error.main'} sx={{ display: 'block' }}>
+                    Stock: {getStock(option)}
+                  </Typography>
+                )}
+              </Box>
+              <Typography variant="body2" color="primary" fontWeight={700} sx={{ flexShrink: 0 }}>
+                S/ {getPrice(option).toFixed(2)}
+              </Typography>
+            </Box>
+          )}
           renderInput={(params) => (
             <TextField
               {...params}
               size="small"
-              placeholder="Buscar servicio..."
+              placeholder={isProductTab ? 'Buscar producto...' : 'Buscar servicio...'}
             />
           )}
         />
         <Button
           variant="contained"
           onClick={() => {
-            if (selectedService) {
-              handleAddService(selectedService);
-              setSelectedService(null);
-              setServiceSearch('');
+            if (selectedItem) {
+              handleAddItem(selectedItem);
             }
           }}
-          disabled={!selectedService}
+          disabled={!selectedItem}
         >
           Agregar
         </Button>
       </Stack>
 
-      {addedServices && addedServices.length > 0 ? (
-        <TableContainer component={Box} variant="outlined" sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Servicio</TableCell>
-                <TableCell>Precio</TableCell>
-                <TableCell align="right">Acción</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {addedServices.map((service) => {
-                const price = typeof service.price === 'number' ? service.price : parseFloat(service.price) || 0;
-                return (
-                  <TableRow key={service.id}>
-                    <TableCell>{service.name}</TableCell>
-                    <TableCell>S/ {price.toFixed(2)}</TableCell>
-                    <TableCell align="right">
-                      <IconButton onClick={() => handleRemoveService(service.id)} color="error">
-                        <Iconify icon="mingcute:delete-2-line" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+      {addedItems && addedItems.length > 0 ? (
+        <ItemsTable
+          addedItems={addedItems}
+          onRemoveItem={handleRemoveItem}
+          onQuantityChange={handleQuantityChange}
+          subtotal={subtotal}
+          discountPercent={discountPercent}
+          setDiscountPercent={setDiscountPercent}
+          discountAmount={discountAmount}
+          setDiscountAmount={setDiscountAmount}
+          finalDiscount={finalDiscount}
+          total={total}
+        />
+      ) : catalogLoading && !hasLoadedRef.current ? (
+        <Stack spacing={1} sx={{ mb: 2 }}>
+          {[...Array(3)].map((_, index) => (
+            <Skeleton key={index} variant="rounded" height={40} />
+          ))}
+        </Stack>
       ) : (
-        <Box sx={{ p: 4, bgcolor: 'grey.50', borderRadius: 1, textAlign: 'center' }}>
+        <Box sx={{ p: 4, mb: 2, bgcolor: 'grey.50', borderRadius: 2, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+          <Iconify icon="solar:box-minimalistic-bold-duotone" width={40} sx={{ color: 'primary.main' }} />
           <Typography variant="body2" color="text.secondary">
-            No hay servicios agregados
+            No hay items agregados
           </Typography>
         </Box>
       )}
     </Card>
+
+    <Stack direction="row" spacing={2} justifyContent="flex-end" >
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={onCancel}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            variant="contained" 
+            size="small" 
+            onClick={onRegisterService} 
+            disabled={addedItems.length === 0 || registering}
+          >
+            {registering ? 'Registrando...' : 'Registrar servicio'}
+          </Button>
+        </Stack>
+    </>
   );
 }

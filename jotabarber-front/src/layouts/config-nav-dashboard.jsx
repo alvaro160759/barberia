@@ -41,6 +41,8 @@ const ICONS = {
   services: icon('ic-servicio'),
   gasto: icon('ic-gasto'),
   customer: icon('ic-customer'),
+  caja: icon('ic-caja'),
+  servicio: icon('servicios'),
 };
 
 // ----------------------------------------------------------------------
@@ -52,7 +54,7 @@ export const navData = [
   {
     subheader: 'PRINCIPAL',
     items: [
-      { title: 'Dashboard', path: paths.dashboard.root, icon: ICONS.dashboard },
+      { title: 'Home', path: paths.dashboard.root, icon: ICONS.ecommerce },
     ],
   },
   /**
@@ -112,18 +114,23 @@ export const navData = [
     subheader: 'Gestión',
     items: [
       {
+        title: 'Gestión de Caja',
+        path: paths.dashboard.sales.cashHistory,
+        icon: ICONS.caja,
+      },
+      {
         title: 'Gestión de servicios',
-        path: paths.dashboard.sales.serviceRegistration,
-        icon: ICONS.gasto,
+        path: paths.dashboard.sales.root,
+        icon: ICONS.servicio,
       },
       {
         title: 'Gestión de citas',
         path: paths.dashboard.appointments.root,
-        icon: ICONS.label,
+        icon: ICONS.calendar,
       },
       {
         title: 'Gestión de egresos',
-        path: '#/dashboard/menu_level',
+        path: paths.dashboard.sales.expenses,
         icon: ICONS.order,
       },
     ],
@@ -132,14 +139,14 @@ export const navData = [
     subheader: 'Reportes',
     items: [
       {
-        title: 'Reporte de servicios',
-        path: '#/dashboard/menu_level',
+        title: 'Comisiones por barbero',
+        path: paths.dashboard.reports.commission,
         icon: ICONS.analytics,
       },
       {
-        title: 'Reporte de egresos',
-        path: '#/dashboard/menu_level',
-        icon: ICONS.analytics,
+        title: 'Reporte ingresos y egresos',
+        path: paths.dashboard.reports.incomeExpense,
+        icon: ICONS.dashboard,
       },
     ],
   },
