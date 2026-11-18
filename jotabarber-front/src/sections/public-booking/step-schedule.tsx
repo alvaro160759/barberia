@@ -1,6 +1,7 @@
 import type { ScheduleSlot, PublicService, BookingFormValues } from 'src/hooks/use-public-booking';
 
 import dayjs from 'dayjs';
+import { useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
@@ -10,7 +11,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { Field } from 'src/components/hook-form';
 import { Iconify } from 'src/components/iconify';
 
 import { StepLayout } from './step-layout';
@@ -22,11 +22,20 @@ interface ScheduleStepProps {
   loading: boolean;
 }
 
+const WEEKDAYS_SHORT = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const MONTHS_SHORT = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const VISIBLE_DAYS = 14;
+
 export function ScheduleStep({ schedules, services = [], loading }: ScheduleStepProps) {
   const { watch, setValue, formState: { errors } } = useFormContext<BookingFormValues>();
   const selectedTime = watch('stepFour.time');
   const selectedDate = watch('stepFour.date');
   const selectedServiceIds = watch('stepThree.service_ids') || [];
+
+  const upcomingDates = useMemo(() => {
+    const today = dayjs().startOf('day');
+    return Array.from({ length: VISIBLE_DAYS }, (_, index) => today.add(index, 'day'));
+  }, []);
 
   const selectedServices = services.filter((service) =>
     selectedServiceIds.includes(Number(service.id))
@@ -59,13 +68,52 @@ export function ScheduleStep({ schedules, services = [], loading }: ScheduleStep
         </Stack>
       )}
 
-      <Field.DatePicker
-        name="stepFour.date"
-        label="Seleccionar Fecha"
-        fullWidth
-        minDate={dayjs()}
-        sx={{ mb: 2 }}
-      />
+      <Typography variant="subtitle2" gutterBottom sx={{ mb: 1 }}>
+        Seleccionar Fecha
+      </Typography>
+
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 1,
+          overflowX: 'auto',
+          pb: 1,
+          mb: 2,
+          mx: -0.5,
+          px: 0.5,
+          '&::-webkit-scrollbar': { height: 6 },
+          '&::-webkit-scrollbar-thumb': { borderRadius: 3, bgcolor: 'divider' },
+        }}
+      >
+        {upcomingDates.map((date, index) => {
+          const selected = dayjs(selectedDate).isSame(date, 'day');
+          return (
+            <Box key={date.format('YYYY-MM-DD')} sx={{ flex: '0 0 auto', width: 68 }}>
+              <SelectableCard
+                selected={selected}
+                onClick={() => setValue('stepFour.date', date.format('YYYY-MM-DD'), { shouldValidate: true })}
+                contentSx={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 1.25, gap: 0 }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{ fontWeight: 600, color: selected ? 'primary.main' : 'text.secondary', lineHeight: 1.4 }}
+                >
+                  {index === 0 ? 'Hoy' : WEEKDAYS_SHORT[date.day()]}
+                </Typography>
+                <Typography variant="h6" sx={{ lineHeight: 1.1, fontWeight: 700 }}>
+                  {date.date()}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ color: selected ? 'primary.main' : 'text.secondary', lineHeight: 1.4 }}
+                >
+                  {MONTHS_SHORT[date.month()]}
+                </Typography>
+              </SelectableCard>
+            </Box>
+          );
+        })}
+      </Box>
 
       {selectedDate && !loading && (
         <>

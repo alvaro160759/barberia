@@ -56,10 +56,6 @@ export const mainRoutes = [
             element: <ContactPage />,
           },
           {
-            path: 'reserva',
-            element: <PublicBookingPage />,
-          },
-          {
             path: 'faqs',
             element: <FaqsPage />,
           },
@@ -85,6 +81,10 @@ export const mainRoutes = [
             ],
           },
         ],
+      },
+      {
+        path: 'reserva',
+        element: <PublicBookingPage />,
       },
       {
         path: 'pricing',

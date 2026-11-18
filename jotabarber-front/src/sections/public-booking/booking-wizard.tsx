@@ -48,7 +48,12 @@ export function BookingWizard() {
   } = usePublicBooking();
 
   return (
-    <Box display="flex" gap={3} alignItems="flex-start" sx={{ width: 1, mx: 'auto', maxWidth: 1100 }}>
+    <Box
+      display="flex"
+      gap={3}
+      alignItems="flex-start"
+      sx={{ width: 1, mx: 'auto', maxWidth: 1100 }}
+    >
       <Card sx={{ p: { xs: 2, sm: 4, md: 5 }, width: 1, minWidth: 0 }}>
         <Form methods={methods} onSubmit={onSubmit}>
           <BookingStepper steps={steps} activeStep={activeStep} />
@@ -68,7 +73,9 @@ export function BookingWizard() {
             {activeStep === 0 && <BranchStep branches={branches} loading={loadingBranches} />}
             {activeStep === 1 && <BarberStep barbers={barbers} loading={loadingBarbers} />}
             {activeStep === 2 && <ServicesStep services={services} loading={loadingServices} />}
-            {activeStep === 3 && <ScheduleStep schedules={schedules} services={services} loading={loadingSchedules} />}
+            {activeStep === 3 && (
+              <ScheduleStep schedules={schedules} services={services} loading={loadingSchedules} />
+            )}
             {activeStep === 4 && (
               <ConfirmStep
                 branch={selectedBranch}
@@ -78,7 +85,9 @@ export function BookingWizard() {
                 services={services}
               />
             )}
-            {completedStep && <CompletedStep appointmentData={appointmentData} onReset={handleReset} />}
+            {completedStep && (
+              <CompletedStep appointmentData={appointmentData} onReset={handleReset} />
+            )}
           </Box>
 
           {!completedStep && (

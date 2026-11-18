@@ -87,16 +87,6 @@ export const APPOINTMENT_ACTIONS: Partial<Record<AppointmentStatus, AppointmentA
   PENDING: [
     { status: 'CONFIRMED', label: 'Confirmar', color: 'primary', variant: 'contained' },
     { status: 'CANCELLED', label: 'Cancelar cita', color: 'error', variant: 'outlined' },
-    { status: 'NO_SHOW', label: 'No asistió', color: 'warning', variant: 'outlined' },
-  ],
-  CONFIRMED: [
-    { status: 'IN_PROGRESS', label: 'Atender', color: 'primary', variant: 'contained' },
-    { status: 'CANCELLED', label: 'Cancelar cita', color: 'error', variant: 'outlined' },
-    { status: 'NO_SHOW', label: 'No asistió', color: 'warning', variant: 'outlined' },
-  ],
-  IN_PROGRESS: [
-    { status: 'COMPLETED', label: 'Completar', color: 'primary', variant: 'contained' },
-    { status: 'CANCELLED', label: 'Cancelar cita', color: 'error', variant: 'outlined' },
   ],
 };
 

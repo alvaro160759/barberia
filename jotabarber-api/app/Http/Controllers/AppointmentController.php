@@ -16,7 +16,7 @@ class AppointmentController extends Controller {
         if($r->route('own'))$q->where('a.barber_id',Access::barber($this->user($r),$branch));
         elseif($r->filled('barber_id'))$q->where('a.barber_id',(int)$r->query('barber_id'));
         if($r->filled('status'))$q->where('a.status',$r->query('status'));
-        $dates=$r->validate(['from'=>'sometimes|date','to'=>'sometimes|date|after:from']);
+        $dates=$r->validate(['from'=>'sometimes|date','to'=>'sometimes|date|after_or_equal:from']);
         if(isset($dates['from']))$q->where('a.starts_at','>=',\Carbon\CarbonImmutable::parse($dates['from'],$zone)->startOfDay()->utc());
         if(isset($dates['to']))$q->where('a.starts_at','<',\Carbon\CarbonImmutable::parse($dates['to'],$zone)->addDay()->startOfDay()->utc());
         $paginator=$q->orderBy('a.starts_at')->paginate($this->perPage($r));

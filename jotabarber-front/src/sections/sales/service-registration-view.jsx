@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
-import { Grid, Container, Stack } from '@mui/material';
+import { Grid, Stack, Container } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -10,20 +11,25 @@ import { useProducts } from 'src/hooks/use-products';
 import { useEmployees } from 'src/hooks/use-employees';
 import { useCustomers } from 'src/hooks/use-customers';
 
+import { salesApi } from 'src/actions/sales';
+import { catalogApi } from 'src/actions/catalog';
+import { appointmentsApi } from 'src/actions/appointments';
+
+import { toast } from 'src/components/snackbar';
 import { useSettingsContext } from 'src/components/settings';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import { toast } from 'src/components/snackbar';
-
-import { catalogApi } from 'src/actions/catalog';
-import { salesApi } from 'src/actions/sales';
 
 import { ClientSelectionCard } from './components/client-selection-card';
 import { BarberSelectionCard } from './components/barber-selection-card';
 import { ServiceSelectionCard } from './components/service-selection-card';
+import { AppointmentPickerCard } from './components/appointment-picker-card';
 
 export function ServiceRegistrationView() {
   const settings = useSettingsContext();
   const router = useRouter();
+  const [searchParams] = useSearchParams();
+  const appointmentParam = searchParams.get('appointment');
+  const autoLoadedRef = useRef(false);
   const { services, loading: servicesLoading, fetchServices } = useServices();
   const { products, loading: productsLoading, fetchProducts } = useProducts();
   const { employees, loading: employeesLoading, fetchEmployees } = useEmployees();
@@ -31,6 +37,9 @@ export function ServiceRegistrationView() {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [openCashSession, setOpenCashSession] = useState(null);
   const [registering, setRegistering] = useState(false);
+  const [confirmedAppointments, setConfirmedAppointments] = useState([]);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedBarber, setSelectedBarber] = useState(null);
@@ -62,10 +71,88 @@ export function ServiceRegistrationView() {
         console.error('Error loading data:', error);
       }
     };
+
+    const loadAppointments = async () => {
+      setAppointmentsLoading(true);
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const response = await appointmentsApi.getAppointments({
+          status: 'CONFIRMED',
+          from: today,
+          to: today,
+          per_page: 100,
+        });
+        const data = response.data?.data?.data || response.data?.data || [];
+        setConfirmedAppointments(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error loading confirmed appointments:', error);
+      } finally {
+        setAppointmentsLoading(false);
+      }
+    };
+
     loadData();
+    loadAppointments();
   }, [fetchServices, fetchProducts, fetchEmployees, fetchCustomers]);
 
   const getItemPrice = (item) => (typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0);
+
+  const handleSelectAppointment = async (appointment) => {
+    setSelectedAppointment(appointment);
+    if (!appointment) return;
+
+    try {
+      const response = await appointmentsApi.getAppointment(appointment.id);
+      const detail = response.data?.data || response.data;
+      if (!detail) return;
+
+      setSelectedClient({
+        id: detail.customer_id,
+        first_name: detail.customer_first_name || '',
+        last_name: detail.customer_last_name || '',
+        phone: detail.customer_phone || null,
+        email: detail.customer_email || null,
+      });
+
+      const barber = employees.find((emp) => Number(emp.id) === Number(detail.barber_id));
+      if (barber) setSelectedBarber(barber);
+
+      const items = (detail.services || []).map((service) => {
+        const catalogService = services.find((svc) => Number(svc.id) === Number(service.service_id));
+        return {
+          ...(catalogService || {
+            id: service.service_id,
+            name: service.service_name,
+            price: service.quoted_price,
+          }),
+          itemType: 'service',
+          quantity: 1,
+        };
+      });
+      setAddedItems(items);
+    } catch (error) {
+      console.error('Error loading appointment detail:', error);
+      toast.error('No se pudo cargar el detalle de la cita');
+    }
+  };
+
+  useEffect(() => {
+    if (!appointmentParam || autoLoadedRef.current) return;
+    if (appointmentsLoading || employeesLoading || servicesLoading) return;
+
+    const match = confirmedAppointments.find(
+      (appt) => Number(appt.id) === Number(appointmentParam)
+    );
+    autoLoadedRef.current = true;
+    handleSelectAppointment(match || { id: Number(appointmentParam) });
+  }, [
+    appointmentParam,
+    confirmedAppointments,
+    appointmentsLoading,
+    employeesLoading,
+    servicesLoading,
+    handleSelectAppointment,
+  ]);
 
   const buildSalePayload = async () => {
     // Resolver customer_id: si el cliente no tiene id (viene de apiperu), buscarlo por documento en la lista local
@@ -119,17 +206,18 @@ export function ServiceRegistrationView() {
         lineDiscountCents = subtotalCents > 0 ? Math.floor((discountCents * lineCents) / subtotalCents) : 0;
         allocatedCents += lineDiscountCents;
       }
-      const discountAmount = (lineDiscountCents / 100).toFixed(2);
+      const lineDiscountAmount = (lineDiscountCents / 100).toFixed(2);
       if (line.item.itemType === 'product') {
-        productLines.push({ product_id: line.item.id, quantity: line.qty, discount_amount: discountAmount });
+        productLines.push({ product_id: line.item.id, quantity: line.qty, discount_amount: lineDiscountAmount });
       } else {
-        serviceLines.push({ service_id: line.item.id, barber_id: selectedBarber.id, quantity: line.qty, discount_amount: discountAmount });
+        serviceLines.push({ service_id: line.item.id, barber_id: selectedBarber.id, quantity: line.qty, discount_amount: lineDiscountAmount });
       }
     });
 
     return {
       operation_key: crypto.randomUUID(),
       customer_id: customerId,
+      appointment_id: selectedAppointment ? Number(selectedAppointment.id) : null,
       notes: notes || null,
       services: serviceLines,
       products: productLines,
@@ -181,6 +269,7 @@ export function ServiceRegistrationView() {
       setSelectedItem(null);
       setSelectedClient(null);
       setSelectedBarber(null);
+      setSelectedAppointment(null);
       setDiscountPercent(0);
       setDiscountAmount(0);
       setNotes('');
@@ -210,6 +299,12 @@ export function ServiceRegistrationView() {
       <Grid container spacing={1} sx={{ mb: { xs: 3, md: 5 } }}>
         <Grid item xs={12} md={5}>
           <Stack spacing={1}>
+            <AppointmentPickerCard
+              appointments={confirmedAppointments}
+              loading={appointmentsLoading}
+              selectedAppointment={selectedAppointment}
+              onSelect={handleSelectAppointment}
+            />
             <ClientSelectionCard
               selectedClient={selectedClient}
               setSelectedClient={setSelectedClient}

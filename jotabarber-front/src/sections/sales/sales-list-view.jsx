@@ -27,6 +27,7 @@ import {
 } from 'src/components/table';
 
 import { salesApi } from 'src/actions/sales';
+import { appointmentsApi } from 'src/actions/appointments';
 
 const TABLE_HEAD = [
   { id: 'number', label: 'Número' },
@@ -69,6 +70,8 @@ export function SalesListView() {
   const [selectedSale, setSelectedSale] = useState(null);
   const [saleDetail, setSaleDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [confirmedAppointments, setConfirmedAppointments] = useState([]);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(false);
 
   // Filtros
   const today = new Date().toISOString().split('T')[0];
@@ -117,6 +120,29 @@ export function SalesListView() {
   useEffect(() => {
     fetchSales();
   }, [fetchSales]);
+
+  const fetchConfirmedAppointments = useCallback(async () => {
+    setAppointmentsLoading(true);
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const response = await appointmentsApi.getAppointments({
+        status: 'CONFIRMED',
+        from: todayStr,
+        to: todayStr,
+        per_page: 100,
+      });
+      const data = response?.data?.data?.data || response?.data?.data || [];
+      setConfirmedAppointments(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Error loading confirmed appointments:', err);
+    } finally {
+      setAppointmentsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchConfirmedAppointments();
+  }, [fetchConfirmedAppointments]);
 
   const handleViewDetail = async (row) => {
     setSelectedSale(row);
@@ -184,6 +210,74 @@ export function SalesListView() {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Citas confirmadas por atender */}
+      <Card sx={{ mb: 3 }}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 3, pt: 2.5 }}>
+          <Typography variant="subtitle1" fontWeight={600}>
+            Citas por atender hoy
+          </Typography>
+          <Chip
+            size="small"
+            color="info"
+            variant="outlined"
+            label={`${confirmedAppointments.length} pendiente${confirmedAppointments.length === 1 ? '' : 's'}`}
+          />
+        </Stack>
+        {appointmentsLoading ? (
+          <Stack spacing={1} sx={{ p: 3 }}>
+            {[...Array(2)].map((_, i) => <Skeleton key={i} variant="rounded" height={44} />)}
+          </Stack>
+        ) : confirmedAppointments.length === 0 ? (
+          <Typography variant="body2" color="text.secondary" sx={{ px: 3, pb: 2.5 }}>
+            No hay citas confirmadas para hoy.
+          </Typography>
+        ) : (
+          <Scrollbar>
+            <TableContainer sx={{ overflow: 'unset' }}>
+              <Table sx={{ minWidth: 640 }}>
+                <TableBody>
+                  {confirmedAppointments.map((appt) => (
+                    <TableRow key={appt.id} hover>
+                      <TableCell sx={{ width: 90 }}>
+                        <Typography variant="body2" fontWeight={600}>
+                          {appt.starts_local?.split(' ')[1] || '-'}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {appt.starts_local?.split(' ')[0]?.split('-').reverse().join('/')}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight={600}>
+                          {appt.customer_first_name} {appt.customer_last_name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {appt.customer_phone || '-'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {appt.barber_first_name} {appt.barber_last_name}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Button
+                          size="small"
+                          variant="contained"
+                          startIcon={<Iconify icon="mingcute:scissors-line" />}
+                          onClick={() => router.push(`${paths.dashboard.sales.serviceRegistration}?appointment=${appt.id}`)}
+                        >
+                          Atender
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Scrollbar>
+        )}
+      </Card>
 
       {/* Filtros */}
       <Card sx={{ mb: 3 }}>

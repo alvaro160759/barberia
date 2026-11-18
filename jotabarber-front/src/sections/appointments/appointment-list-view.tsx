@@ -2,10 +2,13 @@ import type { ChangeEvent } from 'react';
 
 import { useState } from 'react';
 
+import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
+import Tabs from '@mui/material/Tabs';
 
 import { paths } from 'src/routes/paths';
 
+import { useTabs } from 'src/hooks/use-tabs';
 import { useAppointments } from 'src/hooks/use-appointments';
 
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -16,6 +19,7 @@ import { useTable, TablePaginationCustom } from 'src/components/table';
 
 import { AppointmentTable } from './appointment-table';
 import { AppointmentFilters } from './appointment-filters';
+import { AppointmentCalendar } from './appointment-calendar';
 import { EMPTY_APPOINTMENT_FILTERS } from './appointments-constants';
 import { AppointmentDetailDialog } from './appointment-detail-dialog';
 
@@ -28,8 +32,10 @@ interface DateRange {
 
 export function AppointmentListView() {
   const table = useTable();
+  const tabs = useTabs('list');
   const [filters, setFilters] = useState<AppointmentFiltersState>(EMPTY_APPOINTMENT_FILTERS);
   const [appliedFilters, setAppliedFilters] = useState<AppointmentFiltersState>(EMPTY_APPOINTMENT_FILTERS);
+  const [calendarRefreshKey, setCalendarRefreshKey] = useState(0);
 
   const {
     rows,
@@ -87,7 +93,46 @@ export function AppointmentListView() {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      {loading && rows.length === 0 ? (
+      <Tabs
+        value={tabs.value}
+        onChange={tabs.onChange}
+        sx={{ mb: { xs: 3, md: 5 } }}
+      >
+        <Tab value="list" label="Lista" />
+        <Tab value="calendar" label="Calendario" />
+      </Tabs>
+
+      {tabs.value === 'calendar' ? (
+        <>
+          <Card sx={{ mb: { xs: 3, md: 5 } }}>
+            <AppointmentFilters
+              branches={branches}
+              selectedBranch={selectedBranch}
+              onBranchChange={handleBranchChange}
+              barbers={barbers}
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onBarberChange={handleBarberChange}
+              onApplyFilters={handleApplyFilters}
+              onClearFilters={handleClearFilters}
+              onApplyDateRange={handleApplyDateRange}
+              hasActiveFilters={hasActiveFilters}
+              count={rows.length}
+              onRefresh={() => {
+                refresh();
+                setCalendarRefreshKey((key) => key + 1);
+              }}
+            />
+          </Card>
+
+          <AppointmentCalendar
+            selectedBranch={selectedBranch}
+            filters={appliedFilters}
+            refreshKey={calendarRefreshKey}
+            onOpenDetail={handleOpenDetail}
+          />
+        </>
+      ) : loading && rows.length === 0 ? (
         <SplashScreen />
       ) : (
         <Card>
