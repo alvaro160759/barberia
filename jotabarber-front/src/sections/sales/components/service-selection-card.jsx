@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
-import { Avatar, Box, Button, Card, Skeleton, Stack, Tab, Tabs, TextField, Typography, Autocomplete } from '@mui/material';
+import { Box, Tab, Card, Tabs, Stack, Avatar, Button, Skeleton, TextField, Typography, Autocomplete } from '@mui/material';
 
-import { Iconify } from 'src/components/iconify';
 import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
 
 import { ItemsTable } from './items-table';
 
@@ -91,7 +91,7 @@ export function ServiceSelectionCard({
 
   return (
     <>
-    <Card sx={{ p: 3, mb: 3, display: 'flex', flexDirection: 'column',minHeight: 450 }}>
+    <Card sx={{ p: 3, mb: 2, display: 'flex', flexDirection: 'column', minHeight: { xs: 'auto', md: 450 } }}>
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
         <Typography variant="h6">
           Agregar Items

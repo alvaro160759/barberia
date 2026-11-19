@@ -18,7 +18,7 @@ class CreateSale {
             $appointment=null;
             if(!empty($d['appointment_id'])){
                 $appointment=DB::table('appointments')->where('id',$d['appointment_id'])->where('branch_id',$branch)->lockForUpdate()->first();
-                if(!$appointment || !in_array($appointment->status,['CONFIRMED','IN_PROGRESS','COMPLETED']))Records::error('appointment_id','Cita no válida para facturar.');
+                if(!$appointment || !in_array($appointment->status,['PENDING','CONFIRMED','IN_PROGRESS','COMPLETED']))Records::error('appointment_id','Cita no válida para facturar.');
                 if(DB::table('sales')->where('appointment_id',$appointment->id)->exists())Records::error('appointment_id','La cita ya tiene una venta.');
                 if(isset($d['customer_id'])&&(int)$d['customer_id']!==(int)$appointment->customer_id)Records::error('customer_id','El cliente debe coincidir con la cita.');
                 foreach($barbers as $b)if((int)$b!==(int)$appointment->barber_id)Records::error('barber_id','El barbero debe coincidir con la cita.');

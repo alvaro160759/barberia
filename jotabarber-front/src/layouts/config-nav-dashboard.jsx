@@ -129,6 +129,11 @@ export const navData = [
         icon: ICONS.calendar,
       },
       {
+        title: 'Horarios',
+        path: paths.dashboard.schedules.root,
+        icon: ICONS.booking,
+      },
+      {
         title: 'Gestión de egresos',
         path: paths.dashboard.sales.expenses,
         icon: ICONS.order,

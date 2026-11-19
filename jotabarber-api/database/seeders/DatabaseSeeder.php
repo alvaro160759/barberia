@@ -26,5 +26,8 @@ class DatabaseSeeder extends Seeder {
 
         // Ejecutar seeder de horarios de barberos
         $this->call(BarberSchedulesSeeder::class);
+
+        // Ejecutar seeder de cajas registradoras
+        $this->call(CashRegistersSeeder::class);
     }
 }

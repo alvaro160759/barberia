@@ -5,7 +5,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class ScheduleController extends Controller {
-    public function schedules(Request $r) {return Api::ok(DB::table('barber_schedules')->where('branch_id',$this->branch($r))->orderBy('weekday')->get());}
+    public function schedules(Request $r) {return Api::ok(DB::table('barber_schedules')->where('branch_id',$this->branch($r))->where('active',true)->orderBy('weekday')->get());}
     public function createSchedule(Request $r) {
         $d=$r->validate(['employee_id'=>'required|integer','weekday'=>'required|integer|min:1|max:7','starts_at'=>'required|date_format:H:i:s','ends_at'=>'required|date_format:H:i:s|after:starts_at']);
         return DB::transaction(function()use($r,$d){Records::barber((int)$d['employee_id'],$this->branch($r),true);
@@ -24,5 +24,17 @@ class ScheduleController extends Controller {
     }
     public function deleteTimeOff(Request $r) {
         return DB::transaction(function()use($r){$id=(int)$r->route('id');$s=DB::table('barber_time_off')->where('id',$id)->where('branch_id',$this->branch($r))->first();abort_unless($s,404);DB::table('employees')->where('id',$s->employee_id)->lockForUpdate()->first();DB::table('barber_time_off')->where('id',$id)->delete();return Api::ok();});
+    }
+    public function settings(Request $r) {
+        $d=$r->validate(['employee_id'=>'required|integer']);
+        Records::barber((int)$d['employee_id'],$this->branch($r));
+        $interval=(int)(DB::table('employees')->where('id',$d['employee_id'])->value('slot_interval_minutes') ?? 60);
+        return Api::ok(['slot_interval_minutes'=>$interval>0?$interval:60]);
+    }
+    public function updateSettings(Request $r) {
+        $d=$r->validate(['employee_id'=>'required|integer','slot_interval_minutes'=>'required|integer|in:30,40,60']);
+        Records::barber((int)$d['employee_id'],$this->branch($r),true);
+        DB::table('employees')->where('id',$d['employee_id'])->update(['slot_interval_minutes'=>$d['slot_interval_minutes'],'updated_at'=>now()]);
+        return Api::ok(['slot_interval_minutes'=>(int)$d['slot_interval_minutes']],'Configuración actualizada.');
     }
 }

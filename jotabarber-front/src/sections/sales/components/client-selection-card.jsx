@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { Avatar, Box, Card, Chip, Stack, TextField, Typography, IconButton, CircularProgress } from '@mui/material';
 
-import { Iconify } from 'src/components/iconify';
-import { toast } from 'src/components/snackbar';
-import { catalogApi } from 'src/actions/catalog';
+import { Box, Card, Chip, Stack, Avatar, TextField, Typography, IconButton, CircularProgress } from '@mui/material';
+
 import { useCustomers } from 'src/hooks/use-customers';
+
+import { catalogApi } from 'src/actions/catalog';
+
+import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
 
 import { NewClientDialog } from './new-client-dialog';
 
@@ -60,7 +63,7 @@ export function ClientSelectionCard({ selectedClient, setSelectedClient, clientS
   };
 
   return (
-    <Card sx={{ p: 2, height: 180, display: 'flex', flexDirection: 'column' }}>
+    <Card sx={{ p: 2, minHeight: { xs: 'auto', md: 190 }, display: 'flex', flexDirection: 'column' }}>
       <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
         Seleccionar Cliente
       </Typography>

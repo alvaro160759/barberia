@@ -1,7 +1,7 @@
-import { useRef, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
-import { Grid, Stack, Container } from '@mui/material';
+import { Box, Chip, Grid, Stack, Container, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -13,6 +13,7 @@ import { useCustomers } from 'src/hooks/use-customers';
 
 import { salesApi } from 'src/actions/sales';
 import { catalogApi } from 'src/actions/catalog';
+import { employeesApi } from 'src/actions/employees';
 import { appointmentsApi } from 'src/actions/appointments';
 
 import { toast } from 'src/components/snackbar';
@@ -77,13 +78,15 @@ export function ServiceRegistrationView() {
       try {
         const today = new Date().toISOString().split('T')[0];
         const response = await appointmentsApi.getAppointments({
-          status: 'CONFIRMED',
           from: today,
           to: today,
           per_page: 100,
         });
         const data = response.data?.data?.data || response.data?.data || [];
-        setConfirmedAppointments(Array.isArray(data) ? data : []);
+        const appointments = Array.isArray(data) ? data : [];
+        setConfirmedAppointments(
+          appointments.filter((appt) => ['PENDING', 'CONFIRMED'].includes(appt.status))
+        );
       } catch (error) {
         console.error('Error loading confirmed appointments:', error);
       } finally {
@@ -96,8 +99,12 @@ export function ServiceRegistrationView() {
   }, [fetchServices, fetchProducts, fetchEmployees, fetchCustomers]);
 
   const getItemPrice = (item) => (typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0);
+  const getEmployeeName = (employee) =>
+    [employee?.first_name, employee?.last_name].filter((name) => typeof name === 'string' && name).join(' ') || 'Barbero seleccionado';
+  const getClientName = (client) =>
+    [client?.first_name, client?.last_name].filter((name) => typeof name === 'string' && name).join(' ') || client?.full_name || 'Cliente';
 
-  const handleSelectAppointment = async (appointment) => {
+  const handleSelectAppointment = useCallback(async (appointment) => {
     setSelectedAppointment(appointment);
     if (!appointment) return;
 
@@ -114,8 +121,27 @@ export function ServiceRegistrationView() {
         email: detail.customer_email || null,
       });
 
-      const barber = employees.find((emp) => Number(emp.id) === Number(detail.barber_id));
-      if (barber) setSelectedBarber(barber);
+      let barber = employees.find((emp) => Number(emp.id) === Number(detail.barber_id));
+      if (!barber && detail.barber_id) {
+        try {
+          const empRes = await employeesApi.getEmployee(detail.barber_id);
+          barber = empRes?.data?.data || empRes?.data || null;
+        } catch (err) {
+          console.error('Error loading appointment barber:', err);
+        }
+      }
+      setSelectedBarber(
+        barber ||
+          (detail.barber_id
+            ? {
+                id: detail.barber_id,
+                first_name: detail.barber_first_name || '',
+                last_name: detail.barber_last_name || '',
+                job_type: 'BARBER',
+              }
+            : null)
+      );
+      setNotes(detail.notes || '');
 
       const items = (detail.services || []).map((service) => {
         const catalogService = services.find((svc) => Number(svc.id) === Number(service.service_id));
@@ -130,11 +156,14 @@ export function ServiceRegistrationView() {
         };
       });
       setAddedItems(items);
+
+      const selectedMatch = confirmedAppointments.find((appt) => Number(appt.id) === Number(appointment.id));
+      setSelectedAppointment({ ...appointment, ...selectedMatch, ...(detail || {}) });
     } catch (error) {
       console.error('Error loading appointment detail:', error);
       toast.error('No se pudo cargar el detalle de la cita');
     }
-  };
+  }, [confirmedAppointments, employees, services]);
 
   useEffect(() => {
     if (!appointmentParam || autoLoadedRef.current) return;
@@ -296,9 +325,39 @@ export function ServiceRegistrationView() {
         sx={{ mb: { xs: 3, md: 3 } }}
       />
 
-      <Grid container spacing={1} sx={{ mb: { xs: 3, md: 5 } }}>
+      {selectedAppointment && (
+        <Box
+          sx={{
+            mb: 2,
+            p: 2,
+            borderRadius: 2,
+            border: 1,
+            borderColor: 'primary.light',
+            bgcolor: 'primary.lighter',
+          }}
+        >
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="space-between" alignItems={{ sm: 'center' }}>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="subtitle2" color="primary.main" fontWeight={700}>
+                Atendiendo cita #{selectedAppointment.id}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" noWrap>
+                Cliente: {getClientName(selectedClient)}
+              </Typography>
+            </Box>
+            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+              <Chip size="small" color="primary" label={`Barbero: ${getEmployeeName(selectedBarber)}`} />
+              {selectedAppointment.starts_local && (
+                <Chip size="small" variant="outlined" label={selectedAppointment.starts_local.slice(11, 16)} />
+              )}
+            </Stack>
+          </Stack>
+        </Box>
+      )}
+
+      <Grid container spacing={2} sx={{ mb: { xs: 3, md: 5 } }}>
         <Grid item xs={12} md={5}>
-          <Stack spacing={1}>
+          <Stack spacing={2}>
             <AppointmentPickerCard
               appointments={confirmedAppointments}
               loading={appointmentsLoading}

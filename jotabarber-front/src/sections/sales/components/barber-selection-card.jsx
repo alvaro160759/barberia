@@ -1,14 +1,22 @@
 import { useState } from 'react';
-import { Avatar, Box, Card, Paper, Skeleton, Stack, TextField, Typography } from '@mui/material';
+
+import { Box, Card, Paper, Stack, Avatar, Skeleton, TextField, IconButton, Typography } from '@mui/material';
 
 import { Iconify } from 'src/components/iconify';
 
 export function BarberSelectionCard({ employees, loading, selectedBarber, setSelectedBarber }) {
   const [barberSearch, setBarberSearch] = useState('');
 
-  const barbers = employees.filter((emp) => emp.job_type === 'BARBER');
+  const barbers = Array.from(
+    new Map(
+      employees
+        .filter((emp) => emp.job_type === 'BARBER')
+        .map((emp) => [emp.id ?? `${emp.first_name}-${emp.last_name}`, emp])
+    ).values()
+  );
 
   const filteredBarbers = barbers.filter((emp) => {
+    if (Number(selectedBarber?.id) === Number(emp.id)) return false;
     if (!barberSearch) return true;
     const search = barberSearch.toLowerCase();
     const fullName = [emp.first_name, emp.last_name].filter((n) => typeof n === 'string').join(' ').toLowerCase();
@@ -25,7 +33,7 @@ export function BarberSelectionCard({ employees, loading, selectedBarber, setSel
     [employee.first_name, employee.last_name].filter((n) => typeof n === 'string' && n).join(' ') || 'Empleado';
 
   return (
-    <Card sx={{ p: 3, mb: 3, height: 260, display: 'flex', flexDirection: 'column' }}>
+    <Card sx={{ p: 2.5, height: { xs: 'auto', md: 300 }, display: 'flex', flexDirection: 'column' }}>
       <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
         <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>
           Seleccionar Barbero
@@ -41,6 +49,37 @@ export function BarberSelectionCard({ employees, loading, selectedBarber, setSel
           }}
         />
       </Stack>
+
+      {selectedBarber && (
+        <Paper
+          variant="outlined"
+          sx={{
+            mb: 1.5,
+            p: 1.5,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            borderColor: 'primary.main',
+            bgcolor: 'primary.lighter',
+          }}
+        >
+          <Avatar sx={{ bgcolor: 'primary.main', width: 36, height: 36, fontSize: 13, fontWeight: 700 }}>
+            {getInitials(selectedBarber)}
+          </Avatar>
+          <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+            <Typography variant="body2" fontWeight={700} noWrap>
+              {getFullName(selectedBarber)}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Barbero seleccionado para esta venta
+            </Typography>
+          </Box>
+          <IconButton size="small" onClick={() => setSelectedBarber(null)} sx={{ color: 'text.secondary' }}>
+            <Iconify icon="mingcute:close-line" />
+          </IconButton>
+          <Iconify icon="solar:check-circle-bold" sx={{ color: 'primary.main' }} />
+        </Paper>
+      )}
 
       {loading ? (
         <Stack
@@ -90,7 +129,7 @@ export function BarberSelectionCard({ employees, loading, selectedBarber, setSel
           }}
         >
           {filteredBarbers.map((employee) => {
-            const isSelected = selectedBarber?.id === employee.id;
+            const isSelected = Number(selectedBarber?.id) === Number(employee.id);
             return (
               <Paper
                 key={employee.id}
@@ -106,6 +145,7 @@ export function BarberSelectionCard({ employees, loading, selectedBarber, setSel
                   border: isSelected ? 2 : 1,
                   borderColor: isSelected ? 'primary.main' : 'grey.300',
                   bgcolor: isSelected ? 'primary.lighter' : 'background.paper',
+                  boxShadow: isSelected ? 3 : 0,
                   borderRadius: 2,
                   width: 150,
                   height: '100%',
@@ -117,6 +157,12 @@ export function BarberSelectionCard({ employees, loading, selectedBarber, setSel
                   },
                 }}
               >
+                {isSelected && (
+                  <Iconify
+                    icon="solar:check-circle-bold"
+                    sx={{ position: 'absolute', top: 8, right: 8, color: 'primary.main', fontSize: 20 }}
+                  />
+                )}
                 <Avatar
                   sx={{
                     mb: 0.5,

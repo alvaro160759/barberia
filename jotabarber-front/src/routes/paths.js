@@ -164,6 +164,9 @@ export const paths = {
     appointments: {
       root: `${ROOTS.DASHBOARD}/appointments`,
     },
+    schedules: {
+      root: `${ROOTS.DASHBOARD}/schedules`,
+    },
     reports: {
       commission: `${ROOTS.DASHBOARD}/reports/commission`,
       incomeExpense: `${ROOTS.DASHBOARD}/reports/income-expense`,

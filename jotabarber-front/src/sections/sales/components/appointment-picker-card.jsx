@@ -2,12 +2,13 @@ import { Card, Chip, Stack, TextField, Typography, Autocomplete } from '@mui/mat
 
 import { Iconify } from 'src/components/iconify';
 
-import { formatAppointmentDate } from 'src/sections/appointments/appointments-constants';
+import { formatAppointmentDate, getAppointmentStatusLabel } from 'src/sections/appointments/appointments-constants';
 
 function appointmentLabel(appointment) {
   const customer = `${appointment.customer_first_name ?? ''} ${appointment.customer_last_name ?? ''}`.trim();
   const barber = `${appointment.barber_first_name ?? ''} ${appointment.barber_last_name ?? ''}`.trim();
-  return [formatAppointmentDate(appointment.starts_local), customer, barber].filter(Boolean).join(' · ');
+  const status = appointment.status ? getAppointmentStatusLabel(appointment.status) : '';
+  return [formatAppointmentDate(appointment.starts_local), customer, barber, status].filter(Boolean).join(' · ');
 }
 
 export function AppointmentPickerCard({ appointments, loading, selectedAppointment, onSelect }) {
@@ -16,7 +17,7 @@ export function AppointmentPickerCard({ appointments, loading, selectedAppointme
       <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
         <Iconify icon="solar:calendar-bold-duotone" width={20} sx={{ color: 'primary.main' }} />
         <Typography variant="subtitle1" fontWeight={600}>
-          Cita confirmada (opcional)
+          Cita del día (opcional)
         </Typography>
         {selectedAppointment && (
           <Chip
@@ -37,12 +38,12 @@ export function AppointmentPickerCard({ appointments, loading, selectedAppointme
         onChange={(event, value) => onSelect(value)}
         getOptionLabel={appointmentLabel}
         isOptionEqualToValue={(option, value) => option.id === value?.id}
-        noOptionsText="No hay citas confirmadas para hoy"
+        noOptionsText="No hay citas pendientes o confirmadas para hoy"
         renderInput={(params) => (
           <TextField
             {...params}
             label="Seleccionar cita"
-            placeholder="Citas confirmadas de hoy"
+            placeholder="Citas de hoy"
             InputProps={{
               ...params.InputProps,
               startAdornment: (

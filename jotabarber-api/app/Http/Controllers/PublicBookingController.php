@@ -16,13 +16,44 @@ class PublicBookingController extends Controller
     }
     public function barbers(Request $r)
     {
-        $d = $r->validate(['branch_id' => 'required|integer|exists:branches,id']);
+        $d = $r->validate([
+            'branch_id' => 'required|integer|exists:branches,id',
+            'date' => 'nullable|date',
+        ]);
+        $branchId = (int) $d['branch_id'];
+        $zone = DB::table('branches')->where('id', $branchId)->value('timezone') ?? 'America/Lima';
+        try {
+            $date = \Carbon\CarbonImmutable::parse($d['date'] ?? 'now', $zone)->setTimezone($zone);
+        } catch (\Exception $e) {
+            $date = \Carbon\CarbonImmutable::now($zone);
+        }
+        $dayStartUtc = $date->copy()->startOfDay()->utc();
+        $dayEndUtc = $dayStartUtc->addDay();
+        $weekday = $date->dayOfWeekIso;
         return Api::ok(DB::table('employees as e')
             ->join('employee_branches as eb', 'eb.employee_id', '=', 'e.id')
-            ->where('eb.branch_id', $d['branch_id'])
+            ->where('eb.branch_id', $branchId)
             ->where('e.job_type', 'BARBER')
             ->where('e.active', true)
             ->where('eb.active', true)
+            // Solo barberos con turno configurado ese día de la semana
+            ->whereExists(function ($q) use ($branchId, $weekday) {
+                $q->select(DB::raw(1))
+                    ->from('barber_schedules as bs')
+                    ->whereColumn('bs.employee_id', 'e.id')
+                    ->where('bs.branch_id', $branchId)
+                    ->where('bs.weekday', $weekday)
+                    ->where('bs.active', true);
+            })
+            // Excluir barberos con permiso/bloqueo ese día
+            ->whereNotExists(function ($q) use ($branchId, $dayStartUtc, $dayEndUtc) {
+                $q->select(DB::raw(1))
+                    ->from('barber_time_off as bto')
+                    ->whereColumn('bto.employee_id', 'e.id')
+                    ->where('bto.branch_id', $branchId)
+                    ->where('bto.starts_at', '<', $dayEndUtc)
+                    ->where('bto.ends_at', '>', $dayStartUtc);
+            })
             ->select('e.id', 'e.first_name', 'e.last_name', 'e.phone')
             ->orderBy('e.first_name')
             ->get());
@@ -45,7 +76,8 @@ class PublicBookingController extends Controller
             'service_ids' => 'nullable|array',
             'service_ids.*' => 'integer|distinct',
         ]);
-        $zone = DB::table('branches')->where('id', $d['branch_id'])->value('timezone') ?? 'America/Lima';
+        $branchRow = DB::table('branches')->where('id', $d['branch_id'])->first();
+        $zone = $branchRow->timezone ?? 'America/Lima';
         try {
             $date = \Carbon\CarbonImmutable::parse($d['date'], $zone)->setTimezone($zone)->startOfDay();
         } catch (\Exception $e) {
@@ -53,6 +85,8 @@ class PublicBookingController extends Controller
         }
         $branchId = $d['branch_id'];
         $barberId = $d['barber_id'];
+        $barberRow = DB::table('employees')->where('id', $barberId)->first(['slot_interval_minutes']);
+        $slotInterval = max(5, (int) ($barberRow->slot_interval_minutes ?? 60));
         $durationMinutes = 30;
         if (!empty($d['service_ids'])) {
             $serviceIds = array_values(array_unique(array_map('intval', $d['service_ids'])));
@@ -108,9 +142,9 @@ class PublicBookingController extends Controller
             $start = $date->setTimeFromTimeString($schedule->starts_at);
             $end = $date->setTimeFromTimeString($schedule->ends_at);
             $current = $start;
-            while ($current->copy()->addMinutes(30)->lte($end)) {
+            while ($current->copy()->addMinutes($slotInterval)->lte($end)) {
                 if ($current->lte($now)) {
-                    $current = $current->addMinutes(30);
+                    $current = $current->addMinutes($slotInterval);
                     continue;
                 }
                 $slotStart = $current->format('H:i');
@@ -130,7 +164,7 @@ class PublicBookingController extends Controller
                     'time' => $slotStart,
                     'available' => $isAvailable
                 ];
-                $current = $current->addMinutes(30);
+                $current = $current->addMinutes($slotInterval);
             }
         }
         return Api::ok($availableSlots);
