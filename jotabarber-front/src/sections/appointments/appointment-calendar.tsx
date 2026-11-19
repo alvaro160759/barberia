@@ -1,4 +1,4 @@
-import type { EventInput , DatesSetArg, EventClickArg } from '@fullcalendar/core';
+import type { EventInput, DatesSetArg, EventClickArg } from '@fullcalendar/core';
 
 import dayjs from 'dayjs';
 import Calendar from '@fullcalendar/react';
@@ -14,7 +14,6 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -30,10 +29,10 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 import { StyledCalendar } from 'src/sections/calendar/styles';
 
-import type {
-  AppointmentRow,
-  AppointmentStatus,
-  AppointmentFilters as AppointmentFiltersState,
+import {
+  type AppointmentRow,
+  getAppointmentStatusLabel,
+  type AppointmentFilters as AppointmentFiltersState,
 } from './appointments-constants';
 
 const VIEW_OPTIONS = [
@@ -43,14 +42,35 @@ const VIEW_OPTIONS = [
   { value: 'listWeek', label: 'Agenda', icon: 'fluent:calendar-agenda-24-regular' },
 ];
 
-const STATUS_COLORS: Record<AppointmentStatus, string> = {
-  PENDING: 'warning',
-  CONFIRMED: 'info',
-  IN_PROGRESS: 'primary',
-  COMPLETED: 'success',
-  CANCELLED: 'error',
-  NO_SHOW: 'grey',
-};
+const CLIENT_COLORS = [
+  '#1976d2',
+  '#388e3c',
+  '#f57c00',
+  '#d32f2f',
+  '#7b1fa2',
+  '#00838f',
+  '#c2185b',
+  '#5d4037',
+  '#455a64',
+  '#afb42b',
+  '#6d4c41',
+  '#0277bd',
+];
+
+function clientColorIndex(key: string): number {
+  let hash = 5381;
+  for (let i = 0; i < key.length; i += 1) {
+    hash = (hash * 33 + key.charCodeAt(i)) % 2147483647;
+  }
+  return hash % CLIENT_COLORS.length;
+}
+
+const CLIENT_COLOR_STYLES = Object.fromEntries(
+  CLIENT_COLORS.map((color, index) => [
+    `& .fc .fc-event.appt-c${index} .fc-event-main::before`,
+    { backgroundColor: color },
+  ])
+);
 
 interface AppointmentCalendarProps {
   selectedBranch: string;
@@ -59,7 +79,7 @@ interface AppointmentCalendarProps {
   onOpenDetail: (id: number) => void;
 }
 
-function toCalendarEvent(row: AppointmentRow, palette: Record<string, { main: string }>): EventInput {
+function toCalendarEvent(row: AppointmentRow): EventInput {
   const start = row.starts_local ? `${row.starts_local.replace(' ', 'T')}:00` : undefined;
   const day = row.starts_local?.slice(0, 10);
   const end =
@@ -67,17 +87,22 @@ function toCalendarEvent(row: AppointmentRow, palette: Record<string, { main: st
       ? `${day}T${row.ends_local.length === 5 ? `${row.ends_local}:00` : row.ends_local}`
       : undefined;
 
-  const customer = `${row.customer_first_name ?? ''} ${row.customer_last_name ?? ''}`.trim() || 'Cliente';
+  const customer =
+    `${row.customer_first_name ?? ''} ${row.customer_last_name ?? ''}`.trim() || 'Cliente';
   const barber = `${row.barber_first_name ?? ''} ${row.barber_last_name ?? ''}`.trim();
   const time = row.starts_local?.slice(11, 16) ?? '';
+  const colorIndex = clientColorIndex(customer.toLowerCase());
 
   return {
     id: String(row.id),
-    title: [time, customer, barber].filter(Boolean).join(' · '),
+    title: [time, customer, barber, getAppointmentStatusLabel(row.status)]
+      .filter(Boolean)
+      .join(' · '),
     start,
     end,
-    color: palette[STATUS_COLORS[row.status] ?? 'grey']?.main,
+    color: CLIENT_COLORS[colorIndex],
     textColor: '#fff',
+    classNames: [`appt-c${colorIndex}`, `appt-status-${row.status.toLowerCase()}`],
     extendedProps: { status: row.status },
   };
 }
@@ -88,7 +113,6 @@ export function AppointmentCalendar({
   refreshKey = 0,
   onOpenDetail,
 }: AppointmentCalendarProps) {
-  const theme = useTheme();
   const smUp = useResponsive('up', 'sm');
   const calendarRef = useRef<InstanceType<typeof Calendar>>(null);
   const popover = usePopover();
@@ -99,7 +123,12 @@ export function AppointmentCalendar({
   const [view, setView] = useState(smUp ? 'dayGridMonth' : 'listWeek');
   const [dateLabel, setDateLabel] = useState(() => fDate(new Date()));
 
-  const { barber_id: filterBarberId, status: filterStatus, from: filterFrom, to: filterTo } = filters;
+  const {
+    barber_id: filterBarberId,
+    status: filterStatus,
+    from: filterFrom,
+    to: filterTo,
+  } = filters;
 
   const fetchRange = useCallback(
     async (start: Date, end: Date) => {
@@ -126,14 +155,14 @@ export function AppointmentCalendar({
         const response = await appointmentsApi.getAppointments(query);
         const data = response.data?.data?.data || response.data?.data || [];
         const rows: AppointmentRow[] = Array.isArray(data) ? data : [];
-        setEvents(rows.map((row) => toCalendarEvent(row, theme.palette as never)));
+        setEvents(rows.map((row) => toCalendarEvent(row)));
       } catch (error) {
         console.error('Error fetching appointments:', error);
       } finally {
         setLoading(false);
       }
     },
-    [filterBarberId, filterStatus, filterFrom, filterTo, theme]
+    [filterBarberId, filterStatus, filterFrom, filterTo]
   );
 
   const handleDatesSet = useCallback(
@@ -188,7 +217,10 @@ export function AppointmentCalendar({
           <IconButton size="small" onClick={() => calendarApi()?.prev()}>
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButton>
-          <Typography variant="subtitle1" sx={{ minWidth: 160, textAlign: 'center', fontWeight: 600 }}>
+          <Typography
+            variant="subtitle1"
+            sx={{ minWidth: 160, textAlign: 'center', fontWeight: 600 }}
+          >
             {dateLabel}
           </Typography>
           <IconButton size="small" onClick={() => calendarApi()?.next()}>
@@ -196,7 +228,12 @@ export function AppointmentCalendar({
           </IconButton>
         </Box>
 
-        <Button size="small" color="error" variant="contained" onClick={() => calendarApi()?.today()}>
+        <Button
+          size="small"
+          color="error"
+          variant="contained"
+          onClick={() => calendarApi()?.today()}
+        >
           Hoy
         </Button>
 
@@ -213,6 +250,22 @@ export function AppointmentCalendar({
           display: 'flex',
           flexDirection: 'column',
           '.fc.fc-media-screen': { flex: '1 1 auto' },
+          // El relleno del evento usa el color del cliente; el estado se
+          // distingue atenuando/variando el evento vía classNames.
+          '& .fc .fc-event': { cursor: 'pointer' },
+          '& .fc .fc-event:hover .fc-event-main': {
+            position: 'relative',
+            zIndex: 5,
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.18)',
+          },
+          '& .fc .fc-event .fc-event-main::before': { opacity: 0.9 },
+          '& .fc .fc-event .fc-event-main-frame': { color: '#fff', filter: 'none' },
+          ...CLIENT_COLOR_STYLES,
+          '& .fc .fc-event.appt-status-cancelled, & .fc .fc-event.appt-status-no_show': {
+            opacity: 0.45,
+          },
+          '& .fc .fc-event.appt-status-pending .fc-event-main::before': { opacity: 0.14 },
+          '& .fc .fc-event.appt-status-in_progress .fc-event-main::before': { opacity: 0.32 },
         }}
       >
         <Calendar

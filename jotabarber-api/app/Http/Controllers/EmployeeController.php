@@ -4,18 +4,19 @@ use App\Support\{Access,Api,Audit,Records};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class EmployeeController extends Controller {
-    private function query(Request $r) {return DB::table('employees as e')->join('employee_branches as eb','eb.employee_id','=','e.id')->where('eb.branch_id',$this->branch($r))->leftJoin('employee_branches as eba',function($j){$j->on('eba.employee_id','=','e.id')->where('eba.active',true);})->leftJoin('branches as bb','bb.id','=','eba.branch_id')->select('e.*','eb.active as branch_active','eba.branch_id as assigned_branch_id','bb.name as branch_name');}
+    private function query(Request $r) {return DB::table('employees as e')->whereExists(function($q)use($r){$q->select(DB::raw(1))->from('employee_branches as eb')->whereColumn('eb.employee_id','=','e.id')->where('eb.branch_id',$this->branch($r))->where('eb.active',true);})->leftJoinSub(DB::table('employee_branches')->where('active',true)->select('employee_id',DB::raw('MIN(branch_id) as assigned_branch_id'))->groupBy('employee_id'),'eba','eba.employee_id','=','e.id')->leftJoin('branches as bb','bb.id','=','eba.assigned_branch_id')->select('e.*','eba.assigned_branch_id','bb.name as branch_name');}
     public function index(Request $r) {
         if($r->boolean('all')) {
             $q=DB::table('employees as e')
-                ->leftJoin('employee_branches as eba',function($j){$j->on('eba.employee_id','=','e.id')->where('eba.active',true);})->leftJoin('branches as bb','bb.id','=','eba.branch_id')
-                ->select('e.*','eba.branch_id as assigned_branch_id','bb.name as branch_name');
+                ->leftJoinSub(DB::table('employee_branches')->where('active',true)->select('employee_id',DB::raw('MIN(branch_id) as assigned_branch_id'))->groupBy('employee_id'),'eba','eba.employee_id','=','e.id')
+                ->leftJoin('branches as bb','bb.id','=','eba.assigned_branch_id')
+                ->select('e.*','eba.assigned_branch_id','bb.name as branch_name');
         } else {$q=$this->query($r);}
         if($r->filled('job_type'))$q->where('e.job_type',$r->query('job_type'));
         if($r->filled('q'))$q->where(function($q)use($r){$q->where('e.first_name','like','%'.substr($r->query('q'),0,100).'%')->orWhere('e.last_name','like','%'.substr($r->query('q'),0,100).'%');});
         return Api::ok($q->orderBy('e.first_name')->paginate($this->perPage($r)));
     }
-    public function show(Request $r) {$row=DB::table('employees as e')->leftJoin('employee_branches as eba',function($j){$j->on('eba.employee_id','=','e.id')->where('eba.active',true);})->leftJoin('branches as bb','bb.id','=','eba.branch_id')->where('e.id',$r->route('id'))->select('e.*','eba.branch_id as assigned_branch_id','bb.name as branch_name')->first();abort_unless($row,404);return Api::ok($row);}
+    public function show(Request $r) {$row=DB::table('employees as e')->leftJoinSub(DB::table('employee_branches')->where('active',true)->select('employee_id',DB::raw('MIN(branch_id) as assigned_branch_id'))->groupBy('employee_id'),'eba','eba.employee_id','=','e.id')->leftJoin('branches as bb','bb.id','=','eba.assigned_branch_id')->where('e.id',$r->route('id'))->select('e.*','eba.assigned_branch_id','bb.name as branch_name')->first();abort_unless($row,404);return Api::ok($row);}
     public function store(Request $r) {return $this->save($r,false);}
     public function update(Request $r) {return $this->save($r,true);}
     private function save(Request $r,bool $update) {

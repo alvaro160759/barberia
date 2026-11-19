@@ -8,9 +8,9 @@ export const publicBookingApi = {
     return response.data;
   },
 
-  getBarbers: async (branchId) => {
+  getBarbers: async (branchId, date) => {
     const response = await axios.get(`${API_BASE}/barbers`, {
-      params: { branch_id: branchId }
+      params: { branch_id: branchId, date }
     });
     return response.data;
   },

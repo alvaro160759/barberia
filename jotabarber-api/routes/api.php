@@ -235,6 +235,12 @@ Route::middleware(['auth:sanctum', 'active', 'branch'])->group(function () {
             ->middleware('permission:employees.manage')
             ->whereNumber('id')
             ->name('barber.time-off.destroy');
+        Route::get('settings', [ScheduleController::class, 'settings'])
+            ->middleware('permission:employees.view')
+            ->name('settings.index');
+        Route::put('settings', [ScheduleController::class, 'updateSettings'])
+            ->middleware('permission:employees.manage')
+            ->name('settings.update');
     });
 
     // Appointments

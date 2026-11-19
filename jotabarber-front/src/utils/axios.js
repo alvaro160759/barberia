@@ -65,6 +65,11 @@ export const endpoints = {
     detail: (id) => `/api/appointments/${id}`,
     status: (id) => `/api/appointments/${id}/status`,
   },
+  schedules: {
+    barber: '/api/schedules/barber',
+    timeOff: '/api/schedules/barber/time-off',
+    settings: '/api/schedules/settings',
+  },
   access: {
     branches: '/api/access/branches',
     users: '/api/access/users',

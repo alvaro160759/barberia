@@ -93,6 +93,7 @@ const ExpensesPage = lazy(() => import('src/pages/sales/expenses'));
 const CommissionReportPage = lazy(() => import('src/pages/reports/commission'));
 const IncomeExpenseReportPage = lazy(() => import('src/pages/reports/income-expense-report'));
 const AppointmentsPage = lazy(() => import('src/pages/appointments'));
+const SchedulesPage = lazy(() => import('src/pages/schedules'));
 // Customers
 const CustomersListPage = lazy(() => import('src/pages/maintenance/customers/index'));
 const CustomersCreatePage = lazy(() => import('src/pages/maintenance/customers/create'));
@@ -278,6 +279,7 @@ export const dashboardRoutes = [
         ],
       },
       { path: 'appointments', element: <AppointmentsPage /> },
+      { path: 'schedules', element: <SchedulesPage /> },
     ],
   },
 ];

@@ -152,7 +152,7 @@ export function usePublicBooking() {
       const fetchBarbers = async () => {
         setLoadingBarbers(true);
         try {
-          const response = await publicBookingApi.getBarbers(selectedBranchId);
+          const response = await publicBookingApi.getBarbers(selectedBranchId, selectedDate);
           setBarbers(response.data || []);
         } catch (error) {
           console.error('Error fetching barbers:', error);
@@ -163,7 +163,7 @@ export function usePublicBooking() {
       };
       fetchBarbers();
     }
-  }, [selectedBranchId, activeStep]);
+  }, [selectedBranchId, selectedDate, activeStep]);
 
   useEffect(() => {
     if (selectedBranchId) {
