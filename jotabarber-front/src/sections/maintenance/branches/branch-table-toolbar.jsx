@@ -1,17 +1,37 @@
-import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 
-import { useRouter } from 'src/routes/hooks';
+import { Iconify } from 'src/components/iconify';
 
+// ----------------------------------------------------------------------
 
-export function BranchTableToolbar({ onRefresh }) {
-  const router = useRouter();
-
+export function BranchTableToolbar({ filters, onResetPage }) {
   return (
-    <Stack
-      spacing={2}
-      alignItems={{ xs: 'flex-end', md: 'center' }}
-      direction={{ xs: 'column', md: 'row' }}
-      sx={{ p: 2.5, pt: 0 }}
-     />
+    <Box
+      sx={{
+        py: 2.5,
+        px: 3,
+        borderBottom: (theme) => `solid 1px ${theme.vars.palette.divider}`,
+      }}
+    >
+      <TextField
+        fullWidth
+        value={filters.state.name}
+        size="small"
+        onChange={(event) => {
+          onResetPage();
+          filters.setState({ name: event.target.value });
+        }}
+        placeholder="Buscar sede..."
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+            </InputAdornment>
+          ),
+        }}
+      />
+    </Box>
   );
 }

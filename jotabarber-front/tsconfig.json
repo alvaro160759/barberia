@@ -20,8 +20,6 @@
 
     "allowJs": true,
     "checkJs": false,
-
-    "baseUrl": ".",
     "paths": {
       "src/*": ["./src/*"],
       "~*": ["./node_modules/*"]

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 
 import { varAlpha } from 'src/theme/styles';
@@ -12,7 +13,7 @@ import { RejectionFiles } from './components/rejection-files';
 
 // ----------------------------------------------------------------------
 
-export function UploadAvatar({ sx, error, value, disabled, helperText, ...other }) {
+export function UploadAvatar({ sx, error, value, disabled, helperText, visibleByDefault, ...other }) {
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     multiple: false,
     disabled,
@@ -25,8 +26,10 @@ export function UploadAvatar({ sx, error, value, disabled, helperText, ...other 
   const hasError = isDragReject || !!error;
 
   const [preview, setPreview] = useState('');
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    setLoaded(false);
     if (typeof value === 'string') {
       setPreview(value);
     } else if (value instanceof File) {
@@ -35,7 +38,21 @@ export function UploadAvatar({ sx, error, value, disabled, helperText, ...other 
   }, [value]);
 
   const renderPreview = hasFile && (
-    <Image alt="avatar" src={preview} sx={{ width: 1, height: 1, borderRadius: '50%' }} />
+    <Box sx={{ width: 1, height: 1, position: 'relative' }}>
+      {!loaded && (
+        <Skeleton
+          variant="circular"
+          sx={{ position: 'absolute', inset: 0, width: 1, height: 1, zIndex: 1 }}
+        />
+      )}
+      <Image
+        alt="avatar"
+        src={preview}
+        visibleByDefault={visibleByDefault}
+        onLoad={() => setLoaded(true)}
+        sx={{ width: 1, height: 1, borderRadius: '50%', opacity: loaded ? 1 : 0 }}
+      />
+    </Box>
   );
 
   const renderPlaceholder = (

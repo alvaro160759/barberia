@@ -29,6 +29,23 @@ class PayCommission {
             if($method->code==='CASH'&&Cash::expected($session)<$total)Records::error('cash_session_id','Efectivo insuficiente para pagar la liquidación.');
             $id=Records::insert('commission_settlements',['branch_id'=>$branch,'barber_id'=>$d['barber_id'],'period_start'=>$d['period_start'],'period_end'=>$d['period_end'],'amount'=>Money::decimal($total),'status'=>'PAID','paid_at'=>now(),'payment_method_id'=>$method->id,'cash_session_id'=>$d['cash_session_id']??null,'reference'=>$d['reference']??null,'notes'=>$d['notes']??null,'created_by'=>$user,'operation_key'=>$d['operation_key'],'request_hash'=>$hash]);
             foreach($rows as $row)Records::insert('commission_settlement_items',['settlement_id'=>$id,'branch_id'=>$branch,'barber_id'=>$d['barber_id'],'sale_service_id'=>$row->id,'amount'=>$row->barber_amount]);
+            // Crear egreso automáticamente con categoría "Pago a barberos"
+            $barber=DB::table('employees')->where('id',$d['barber_id'])->value('first_name');
+            $periodLabel=CarbonImmutable::parse($d['period_start'],$zone)->format('d/m/Y').' - '.CarbonImmutable::parse($d['period_end'],$zone)->format('d/m/Y');
+            $expenseId=Records::insert('expenses',[
+                'branch_id'=>$branch,
+                'category_id'=>5,
+                'cash_session_id'=>$d['cash_session_id']??null,
+                'payment_method_id'=>$method->id,
+                'description'=>"Liquidación de comisiones - {$barber} ({$periodLabel})",
+                'amount'=>Money::decimal($total),
+                'spent_at'=>now(),
+                'reference'=>$d['reference']??null,
+                'created_by'=>$user,
+                'operation_key'=>$d['operation_key'],
+                'request_hash'=>$hash
+            ]);
+            DB::table('commission_settlements')->where('id',$id)->update(['expense_id'=>$expenseId]);
             Audit::log($branch,$user,'PAY','commission_settlements',$id);return DB::table('commission_settlements')->where('id',$id)->first();
         },3);
     }

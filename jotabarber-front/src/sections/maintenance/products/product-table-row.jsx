@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
-export function ProductTableRow({ row, onEditRow, onDeleteRow }) {
+export function ProductTableRow({ row, onEditRow, onDeleteRow, onStockEntry }) {
   return (
     <TableRow hover>
       <TableCell>{row.name}</TableCell>
@@ -23,6 +23,9 @@ export function ProductTableRow({ row, onEditRow, onDeleteRow }) {
       </TableCell>
       <TableCell align="right">
         <Stack direction="row" spacing={1}>
+          <IconButton onClick={onStockEntry} title="Ingreso de stock" color="success">
+            <Iconify icon="mingcute:archive-line" />
+          </IconButton>
           <IconButton onClick={onEditRow}>
             <Iconify icon="solar:pen-bold" />
           </IconButton>

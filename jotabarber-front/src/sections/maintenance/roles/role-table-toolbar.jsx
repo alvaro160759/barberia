@@ -17,6 +17,7 @@ export function RoleTableToolbar({ filters, onResetPage }) {
     >
       <TextField
         fullWidth
+        size='small'
         value={filters.state.name}
         onChange={(event) => {
           onResetPage();

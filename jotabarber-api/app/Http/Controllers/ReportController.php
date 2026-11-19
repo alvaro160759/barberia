@@ -46,14 +46,28 @@ class ReportController extends Controller {
             ->whereIn('s.branch_id',$branches)->where('s.status','CONFIRMED')->where('s.sold_at','>=',$from)->where('s.sold_at','<',$end);
         if(!empty($d['barber_id']))$base->where('ss.barber_id',$d['barber_id']);
         if(!empty($d['service_id']))$base->where('ss.service_id',$d['service_id']);
+        $paidQuery=DB::table('commission_settlement_items as i')->join('commission_settlements as st','st.id','=','i.settlement_id')
+            ->join('sale_services as ss','ss.id','=','i.sale_service_id')->join('sales as s','s.id','=','ss.sale_id')
+            ->where('st.status','PAID')->whereIn('s.branch_id',$branches)->where('s.status','CONFIRMED')->where('s.sold_at','>=',$from)->where('s.sold_at','<',$end);
+        if(!empty($d['barber_id']))$paidQuery->where('i.barber_id',$d['barber_id']);
+        if(!empty($d['service_id']))$paidQuery->where('ss.service_id',$d['service_id']);
+        $paidByBarber=$paidQuery->select('i.barber_id')->selectRaw('SUM(i.amount) as paid_amount')->groupBy('i.barber_id')->pluck('paid_amount','barber_id');
         $byBarber=(clone $base)->select('ss.barber_id','e.first_name','e.last_name')->selectRaw('SUM(ss.quantity) as services_count,SUM(ss.net_amount) as services_sales,SUM(ss.barber_amount) as barber_earned,AVG(svc.commission_percentage) as avg_commission_pct')
-            ->groupBy('ss.barber_id','e.first_name','e.last_name')->orderByDesc('services_sales')->get();
+            ->groupBy('ss.barber_id','e.first_name','e.last_name')->orderByDesc('services_sales')->get()
+            ->map(function($row)use($paidByBarber){
+                $paid=(string)($paidByBarber[$row->barber_id]??'0');
+                $row->paid_amount=$paid;
+                $row->pending_amount=bcsub((string)$row->barber_earned,$paid,2);
+                return $row;
+            });
         $byServiceType=(clone $base)->select('svc.name')->selectRaw('SUM(ss.quantity) as count')->groupBy('svc.id','svc.name')->orderByDesc('count')->get();
         $byBarberMap=$byBarber->keyBy('barber_id');
         $totalServices=$byBarber->sum('services_count');
         $totalClients=DB::table('sales')->whereIn('branch_id',$branches)->where('status','CONFIRMED')->where('sold_at','>=',$from)->where('sold_at','<',$end)->distinct('customer_id')->count('customer_id');
         $totalSales=$byBarber->sum('services_sales');
         $totalCommissions=$byBarber->sum('barber_earned');
+        $totalPaid=$byBarber->sum('paid_amount');
+        $totalPending=$byBarber->sum('pending_amount');
         $details=null;
         if(!empty($d['barber_id'])){
             $details=DB::table('sale_services as ss')->join('sales as s','s.id','=','ss.sale_id')->leftJoin('customers as c','c.id','=','s.customer_id')
@@ -62,7 +76,7 @@ class ReportController extends Controller {
                 ->select('s.sold_at','c.first_name as customer_first_name','c.last_name as customer_last_name','svc.name as service_name','ss.unit_price as price','ss.quantity','ss.barber_percentage','ss.barber_amount')
                 ->orderBy('s.sold_at')->get();
         }
-        return Api::ok(['summary'=>['services_count'=>(int)$totalServices,'clients_count'=>(int)$totalClients,'total_sales'=>(string)$totalSales,'total_commissions'=>(string)$totalCommissions],'by_barber'=>$byBarber,'by_service_type'=>$byServiceType,'details'=>$details]);
+        return Api::ok(['summary'=>['services_count'=>(int)$totalServices,'clients_count'=>(int)$totalClients,'total_sales'=>(string)$totalSales,'total_commissions'=>(string)$totalCommissions,'total_paid'=>(string)$totalPaid,'total_pending'=>(string)$totalPending],'by_barber'=>$byBarber,'by_service_type'=>$byServiceType,'details'=>$details]);
     }
     public function audit(Request $r) {return Api::ok(DB::table('audit_logs')->where('branch_id',$this->branch($r))->orderByDesc('id')->paginate($this->perPage($r)));}
 }

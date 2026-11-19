@@ -223,7 +223,7 @@ export function IncomeExpenseReportView() {
       <Card sx={{ mb: 3 }}>
         <Stack spacing={2} sx={{ p: 3 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={2}>
               <TextField
                 select
                 label="Periodo"
@@ -313,7 +313,7 @@ export function IncomeExpenseReportView() {
                 </Grid>
               </>
             )}
-            <Grid item xs={12} sm={period === 'custom' ? 6 : 3}>
+            <Grid item xs={12} sm={4}>
               <Autocomplete
                 options={branches}
                 getOptionLabel={(option) => option.name || ''}

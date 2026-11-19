@@ -50,18 +50,18 @@ import { UserTableFiltersResult } from './user-table-filters-result';
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'Todos' },
-  { value: 'true', label: 'Activos' },
-  { value: 'false', label: 'Inactivos' },
+  { value: '1', label: 'Activos' },
+  { value: '0', label: 'Inactivos' },
 ];
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Nombre' },
+  { id: 'name', label: 'Nombre', width: 300 },
   { id: 'username', label: 'Usuario' },
   { id: 'role_name', label: 'Rol' },
-  { id: 'branch_name', label: 'Sucursal' },
+  { id: 'branches', label: 'Sedes', width: 220 },
   { id: 'email', label: 'Email' },
   { id: 'active', label: 'Estado', width: 100 },
-  { id: '', width: 88 },
+  { id: 'actions', label: 'Acciones', width: 88 },
 ];
 
 // ----------------------------------------------------------------------
@@ -115,33 +115,36 @@ export function UserListView() {
     async (id) => {
       try {
         await accessApi.deleteUser(id);
-        const deleteRow = tableData.filter((row) => row.id !== id);
 
-        toast.success('Usuario eliminado correctamente');
+        toast.success('Usuario desactivado correctamente');
 
-        setTableData(deleteRow);
-
+        await fetchUsers();
         table.onUpdatePageDeleteRow(dataInPage.length);
       } catch (error) {
         console.error('Error deleting user:', error);
         toast.error('Error al eliminar usuario');
       }
     },
-    [dataInPage.length, table, tableData]
+    [dataInPage.length, table, fetchUsers]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+  const handleDeleteRows = useCallback(async () => {
+    try {
+      await Promise.all(table.selected.map((id) => accessApi.deleteUser(id)));
 
-    toast.success('Usuarios eliminados correctamente');
+      toast.success('Usuarios desactivados correctamente');
 
-    setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+      table.setSelected([]);
+      await fetchUsers();
+      table.onUpdatePageDeleteRows({
+        totalRowsInPage: dataInPage.length,
+        totalRowsFiltered: dataFiltered.length,
+      });
+    } catch (error) {
+      console.error('Error deleting users:', error);
+      toast.error('Error al eliminar usuarios');
+    }
+  }, [dataFiltered.length, dataInPage.length, table, fetchUsers]);
 
   const handleEditRow = useCallback(
     (id) => {
@@ -173,9 +176,9 @@ export function UserListView() {
               component={RouterLink}
               href={paths.dashboard.maintenance.users.new}
               variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
+              startIcon={<Iconify icon="solar:add-circle-bold" />}
             >
-              Nuevo usuario
+              Nuevo
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -205,8 +208,8 @@ export function UserListView() {
                       'soft'
                     }
                     color={
-                      (tab.value === 'true' && 'success') ||
-                      (tab.value === 'false' && 'error') ||
+                      (tab.value === '1' && 'success') ||
+                      (tab.value === '0' && 'error') ||
                       'default'
                     }
                   >
@@ -235,25 +238,6 @@ export function UserListView() {
 
           
           <Box sx={{ position: 'relative' }}>
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={dataFiltered.length}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  dataFiltered.map((row) => row.id)
-                )
-              }
-              action={
-                <Tooltip title="Eliminar">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
-              }
-            />
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -263,12 +247,7 @@ export function UserListView() {
                   rowCount={dataFiltered.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      dataFiltered.map((row) => row.id)
-                    )
-                  }
+                  
                 />
 
                 <TableBody>
@@ -283,7 +262,6 @@ export function UserListView() {
                           key={row.id}
                           row={row}
                           selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
                           onDeleteRow={() => handleDeleteRow(row.id)}
                           onEditRow={() => handleEditRow(row.id)}
                         />

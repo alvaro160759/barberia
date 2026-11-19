@@ -19,7 +19,12 @@ class EmployeeController extends Controller {
     public function store(Request $r) {return $this->save($r,false);}
     public function update(Request $r) {return $this->save($r,true);}
     private function save(Request $r,bool $update) {
-        $d=$r->validate(['first_name'=>'required|string|max:100','last_name'=>'required|string|max:100','job_type'=>'required|in:BARBER,RECEPTIONIST,MANAGER,OTHER','document_type'=>'nullable|string|max:20','document_number'=>'nullable|string|max:30','phone'=>'nullable|string|max:30','email'=>'nullable|email|max:150','hire_date'=>'nullable|date','active'=>'sometimes|boolean','user_id'=>'nullable|integer','branch_id'=>'nullable|integer|min:1']);
+        $d=$r->validate(['first_name'=>'required|string|max:100','last_name'=>'required|string|max:100','job_type'=>'required|in:BARBER,RECEPTIONIST,MANAGER,OTHER','document_type'=>'nullable|string|max:20','document_number'=>'nullable|string|max:30','phone'=>'nullable|string|max:30','email'=>'nullable|email|max:150','hire_date'=>'nullable|date','active'=>'sometimes|boolean','avatar'=>'nullable|image|max:2048','user_id'=>'nullable|integer','branch_id'=>'nullable|integer|min:1']);
+        if($r->hasFile('avatar')){
+            $dir=public_path('uploads/employees');if(!is_dir($dir))mkdir($dir,0755,true);
+            $file=$r->file('avatar');$name='emp_'.($update?(int)$r->route('id'):'new').'_'.time().'.'.$file->getClientOriginalExtension();
+            $file->move($dir,$name);$d['avatar']='/uploads/employees/'.$name;
+        }
         $assignedBranch=$d['branch_id']??null;unset($d['branch_id']);
         if($assignedBranch!==null)abort_unless(Access::allowedBranch($this->user($r),(int)$assignedBranch),403,'Sucursal no autorizada.');
         

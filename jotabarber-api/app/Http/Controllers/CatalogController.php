@@ -24,7 +24,7 @@ class CatalogController extends Controller {
                       $join->on('bp.product_id','=','products.id')
                            ->where('bp.branch_id','=',$targetBranchId);
                   })
-                  ->select('products.*','pc.name as category_name','bp.sale_price as price','bp.stock_qty as stock');
+                  ->select('products.*','pc.name as category_name','bp.sale_price as price','bp.average_cost as cost','bp.stock_qty as stock');
             }
         }
         if($d['branch']??false)$q->where('branch_id',$this->branch($r));
@@ -42,13 +42,15 @@ class CatalogController extends Controller {
                 $targetBranchId = $this->branch($r);
             }
             
+            $anyPrice=DB::table('branch_products')->select('product_id')->selectRaw('MIN(sale_price) as price')->groupBy('product_id');
             $q=DB::table('products')
               ->leftJoin('product_categories as pc','pc.id','=','products.category_id')
               ->leftJoin('branch_products as bp',function($join) use ($targetBranchId){
                   $join->on('bp.product_id','=','products.id')
                        ->where('bp.branch_id','=',$targetBranchId);
               })
-              ->select('products.*','pc.name as category_name','bp.sale_price as price','bp.stock_qty as stock');
+              ->leftJoinSub($anyPrice,'ap','ap.product_id','=','products.id')
+              ->select('products.*','pc.name as category_name',DB::raw('COALESCE(bp.sale_price,ap.price,0) as price'),'bp.average_cost as cost','bp.stock_qty as stock');
         }
         // Para servicios, seleccionar todos los campos (incluye price y commission_percentage)
         elseif($d['table']==='services'){
@@ -121,12 +123,13 @@ class CatalogController extends Controller {
                 
                 // Para productos, también actualizar precio y stock en branch_products
                 if($d['table']==='products'){
-                    // Extraer precio y stock para branch_products
+                    // Extraer precio, costo y stock para branch_products
                     $price = $data['price'] ?? $data['sale_price'] ?? null;
+                    $cost = $data['cost'] ?? $data['average_cost'] ?? $data['purchase_price'] ?? null;
                     $stock = $data['stock'] ?? $data['stock_qty'] ?? null;
                     
                     // Eliminar campos que no pertenecen a products
-                    unset($data['price'],$data['stock'],$data['sale_price'],$data['stock_qty']);
+                    unset($data['price'],$data['stock'],$data['sale_price'],$data['stock_qty'],$data['cost'],$data['average_cost'],$data['purchase_price']);
                     
                     // Actualizar producto
                     $q->where('id',$id)->update($data+['updated_at'=>now()]);
@@ -141,6 +144,7 @@ class CatalogController extends Controller {
                         
                         $branchData=['updated_at'=>now()];
                         if($price !== null)$branchData['sale_price']=$price;
+                        if($cost !== null)$branchData['average_cost']=$cost;
                         if($stock !== null)$branchData['stock_qty']=$stock;
                         
                         if($branchProduct){
@@ -153,7 +157,7 @@ class CatalogController extends Controller {
                                 'branch_id'=>$branchId,
                                 'product_id'=>$id,
                                 'sale_price'=>$price??0,
-                                'average_cost'=>0,
+                                'average_cost'=>$cost??0,
                                 'stock_qty'=>$stock??0,
                                 'minimum_stock'=>0,
                                 'active'=>true,
@@ -170,10 +174,11 @@ class CatalogController extends Controller {
                 // Para productos, extraer precio y stock antes de insertar
                 if($d['table']==='products'){
                     $price = $data['price'] ?? $data['sale_price'] ?? 0;
+                    $cost = $data['cost'] ?? $data['average_cost'] ?? $data['purchase_price'] ?? 0;
                     $stock = $data['stock'] ?? $data['stock_qty'] ?? 0;
                     
                     // Eliminar campos que no pertenecen a products
-                    unset($data['price'],$data['stock'],$data['sale_price'],$data['stock_qty']);
+                    unset($data['price'],$data['stock'],$data['sale_price'],$data['stock_qty'],$data['cost'],$data['average_cost'],$data['purchase_price']);
                 }
                 
                 $id=Records::insert($d['table'],$data);
@@ -184,7 +189,7 @@ class CatalogController extends Controller {
                         'branch_id'=>$this->branch($r),
                         'product_id'=>$id,
                         'sale_price'=>$price,
-                        'average_cost'=>0,
+                        'average_cost'=>$cost,
                         'stock_qty'=>$stock,
                         'minimum_stock'=>0,
                         'active'=>true,

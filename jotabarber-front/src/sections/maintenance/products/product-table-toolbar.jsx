@@ -1,35 +1,55 @@
-import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import Grid from '@mui/material/Unstable_Grid2';
 
-import { useRouter } from 'src/routes/hooks';
+import { Iconify } from 'src/components/iconify';
 
+// ----------------------------------------------------------------------
 
-export function ProductTableToolbar({ onBranchChange, branches, selectedBranch }) {
-  const router = useRouter();
-
+export function ProductTableToolbar({ onBranchChange, branches, selectedBranch, filters, onResetPage }) {
   return (
-    <Stack
-      spacing={2}
-      alignItems={{ xs: 'flex-end', md: 'center' }}
-      direction={{ xs: 'column', md: 'row' }}
-      sx={{ p: 2.5, pt: 2 }}
-    >
-      <TextField
-        select
-        label="Sucursal"
-        size='small'
-        value={selectedBranch}
-        onChange={(e) => onBranchChange(e.target.value)}
-        sx={{ minWidth: 200 }}
-      >
-        <MenuItem value="">Todas las sucursales</MenuItem>
-        {branches.map((branch) => (
-          <MenuItem key={branch.id} value={branch.id}>
-            {branch.name}
-          </MenuItem>
-        ))}
-      </TextField>
-    </Stack>
+    <Box sx={{ p: 2.5, pt: 2 }}>
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={12} sm={4} md={3}>
+          <TextField
+            select
+            fullWidth
+            label="Sucursal"
+            size="small"
+            value={selectedBranch}
+            onChange={(e) => onBranchChange(e.target.value)}
+          >
+            <MenuItem value="">Todas las sucursales</MenuItem>
+            {branches.map((branch) => (
+              <MenuItem key={branch.id} value={branch.id}>
+                {branch.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+
+        <Grid item xs={12} sm={8} md={9}>
+          <TextField
+            fullWidth
+            value={filters.state.name}
+            size="small"
+            onChange={(event) => {
+              onResetPage();
+              filters.setState({ name: event.target.value });
+            }}
+            placeholder="Buscar producto..."
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+      </Grid>
+    </Box>
   );
 }

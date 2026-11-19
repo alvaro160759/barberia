@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -14,10 +16,13 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useBranches } from 'src/hooks/use-branches';
+import { useSetState } from 'src/hooks/use-set-state';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { toast } from 'src/components/snackbar';
+import { Label } from 'src/components/label';
+import { varAlpha } from 'src/theme/styles';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 import { SplashScreen } from 'src/components/loading-screen';
@@ -39,6 +44,12 @@ import { BranchTableToolbar } from './branch-table-toolbar';
 
 // ----------------------------------------------------------------------
 
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'Todas' },
+  { value: '1', label: 'Activas' },
+  { value: '0', label: 'Inactivas' },
+];
+
 const TABLE_HEAD = [
   { id: 'code', label: 'Código', width: 120 },
   { id: 'name', label: 'Nombre' },
@@ -56,6 +67,7 @@ export function BranchListView() {
   const confirm = useBoolean();
   const { branches, loading, fetchBranches, deleteBranch } = useBranches();
   const [tableData, setTableData] = useState([]);
+  const filters = useSetState({ name: '', status: 'all' });
 
   useEffect(() => {
     const loadData = async () => {
@@ -82,7 +94,22 @@ export function BranchListView() {
     toast.success(`Sucursal "${branch.name}" seleccionada`);
   };
 
-  const dataFiltered = tableData;
+  const handleFilterStatus = (event, newValue) => {
+    table.onResetPage();
+    filters.setState({ status: newValue });
+  };
+
+  const dataFiltered = tableData.filter((row) => {
+    const q = filters.state.name.trim().toLowerCase();
+    const matchesSearch =
+      !q ||
+      [row.name, row.code, row.address, row.phone]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q));
+    const matchesStatus =
+      filters.state.status === 'all' || String(row.active) === filters.state.status;
+    return matchesSearch && matchesStatus;
+  });
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
   const notFound = !dataFiltered.length;
 
@@ -112,8 +139,43 @@ export function BranchListView() {
           <SplashScreen />
         ) : (
           <>
-            <BranchTableToolbar onRefresh={fetchBranches} />
             <Card>
+            <Tabs
+              value={filters.state.status}
+              onChange={handleFilterStatus}
+              sx={{
+                px: 2.5,
+                boxShadow: (theme) =>
+                  `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
+              }}
+            >
+              {STATUS_OPTIONS.map((tab) => (
+                <Tab
+                  key={tab.value}
+                  iconPosition="end"
+                  value={tab.value}
+                  label={tab.label}
+                  icon={
+                    <Label
+                      variant={
+                        ((tab.value === 'all' || tab.value === filters.state.status) && 'filled') ||
+                        'soft'
+                      }
+                      color={
+                        (tab.value === '1' && 'success') ||
+                        (tab.value === '0' && 'error') ||
+                        'default'
+                      }
+                    >
+                      {tab.value === 'all'
+                        ? tableData.length
+                        : tableData.filter((b) => String(b.active) === tab.value).length}
+                    </Label>
+                  }
+                />
+              ))}
+            </Tabs>
+            <BranchTableToolbar filters={filters} onResetPage={table.onResetPage} />
             <Box sx={{ position: 'relative' }}>
               <TableSelectedAction
                 dense={table.dense}

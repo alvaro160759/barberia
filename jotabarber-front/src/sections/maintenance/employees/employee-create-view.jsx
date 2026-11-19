@@ -14,11 +14,11 @@ export function EmployeeCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Nuevo Barbero"
+        heading="Nuevo colaborador"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Mantenimiento', href: paths.dashboard.maintenance.root },
-          { name: 'Barberos', href: paths.dashboard.maintenance.employees.root },
+          { name: 'Colaboradores', href: paths.dashboard.maintenance.employees.root },
           { name: 'Nuevo' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

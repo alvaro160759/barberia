@@ -15,12 +15,12 @@ import { Scrollbar } from 'src/components/scrollbar';
 
 const formatMoney = (value) => `S/ ${Number(value || 0).toFixed(2)}`;
 
-export function BarberTable({ byBarber, summary, onViewDetail }) {
+export function BarberTable({ byBarber, summary, onViewDetail, onSettle }) {
   return (
     <Card>
       <Stack>
         <Scrollbar>
-          <Table sx={{ minWidth: 800 }}>
+          <Table sx={{ minWidth: 1000 }}>
             <TableHead>
               <TableRow>
                 <TableCell>#</TableCell>
@@ -28,6 +28,8 @@ export function BarberTable({ byBarber, summary, onViewDetail }) {
                 <TableCell align="center">Servicios</TableCell>
                 <TableCell align="right">Ingresos</TableCell>
                 <TableCell align="right">Comisión</TableCell>
+                <TableCell align="right">Pagado</TableCell>
+                <TableCell align="right">Pendiente</TableCell>
                 <TableCell align="center">Acciones</TableCell>
               </TableRow>
             </TableHead>
@@ -74,19 +76,41 @@ export function BarberTable({ byBarber, summary, onViewDetail }) {
                   <TableCell align="right" fontWeight={600} color="success.main">
                     {formatMoney(barber.barber_earned)}
                   </TableCell>
+                  <TableCell align="right" sx={{ color: 'success.dark' }}>
+                    {formatMoney(barber.paid_amount)}
+                  </TableCell>
+                  <TableCell align="right" sx={{ color: Number(barber.pending_amount) > 0 ? 'warning.dark' : 'text.secondary', fontWeight: Number(barber.pending_amount) > 0 ? 600 : 400 }}>
+                    {formatMoney(barber.pending_amount)}
+                  </TableCell>
                   <TableCell align="center">
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      color="primary"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onViewDetail(barber);
-                      }}
-                      startIcon={<Iconify icon="mdi:eye" />}
-                    >
-                      Ver
-                    </Button>
+                    <Stack direction="row" spacing={1} justifyContent="center">
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onViewDetail(barber);
+                        }}
+                        startIcon={<Iconify icon="mdi:eye" />}
+                      >
+                        Ver
+                      </Button>
+                      {onSettle && Number(barber.pending_amount) > 0 && (
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color="warning"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSettle(barber);
+                          }}
+                          startIcon={<Iconify icon="mingcute:cash-line" />}
+                        >
+                          Liquidar
+                        </Button>
+                      )}
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))}
@@ -102,6 +126,12 @@ export function BarberTable({ byBarber, summary, onViewDetail }) {
                 </TableCell>
                 <TableCell align="right" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
                   {formatMoney(summary?.total_commissions)}
+                </TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'success.dark' }}>
+                  {formatMoney(summary?.total_paid)}
+                </TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'warning.dark' }}>
+                  {formatMoney(summary?.total_pending)}
                 </TableCell>
               </TableRow>
             </TableBody>

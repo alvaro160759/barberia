@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Avatar, Box, Card, Paper, Skeleton, Stack, TextField, Typography } from '@mui/material';
 
 import { Iconify } from 'src/components/iconify';
+import { CONFIG } from 'src/config-global';
 
 export function BarberSelectionCard({ employees, loading, selectedBarber, setSelectedBarber }) {
   const [barberSearch, setBarberSearch] = useState('');
@@ -25,7 +26,7 @@ export function BarberSelectionCard({ employees, loading, selectedBarber, setSel
     [employee.first_name, employee.last_name].filter((n) => typeof n === 'string' && n).join(' ') || 'Empleado';
 
   return (
-    <Card sx={{ p: 3, mb: 3, height: 260, display: 'flex', flexDirection: 'column' }}>
+    <Card sx={{ p: 3, mb: 3, height: 320, display: 'flex', flexDirection: 'column' }}>
       <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
         <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>
           Seleccionar Barbero
@@ -61,11 +62,11 @@ export function BarberSelectionCard({ employees, loading, selectedBarber, setSel
                 borderColor: 'grey.300',
                 borderRadius: 2,
                 textAlign: 'center',
-                width: 150,
+                width: 180,
                 flexShrink: 0,
               }}
             >
-              <Skeleton variant="circular" width={44} height={44} sx={{ mx: 'auto', mb: 0.5 }} />
+              <Skeleton variant="circular" width={72} height={72} sx={{ mx: 'auto', mb: 1 }} />
               <Skeleton variant="text" width="80%" sx={{ mx: 'auto' }} />
               <Skeleton variant="text" width="50%" sx={{ mx: 'auto' }} />
             </Paper>
@@ -107,7 +108,7 @@ export function BarberSelectionCard({ employees, loading, selectedBarber, setSel
                   borderColor: isSelected ? 'primary.main' : 'grey.300',
                   bgcolor: isSelected ? 'primary.lighter' : 'background.paper',
                   borderRadius: 2,
-                  width: 150,
+                  width: 180,
                   height: '100%',
                   flexShrink: 0,
                   transition: 'all 0.2s ease',
@@ -118,22 +119,23 @@ export function BarberSelectionCard({ employees, loading, selectedBarber, setSel
                 }}
               >
                 <Avatar
+                  src={employee.avatar ? `${CONFIG.site.serverUrl}${employee.avatar}` : undefined}
                   sx={{
-                    mb: 0.5,
-                    width: 44,
-                    height: 44,
+                    mb: 1,
+                    width: 72,
+                    height: 72,
                     bgcolor: isSelected ? 'primary.main' : 'grey.300',
                     color: isSelected ? 'white' : 'grey.700',
                     fontWeight: 700,
-                    fontSize: 15,
+                    fontSize: 24,
                   }}
                 >
                   {getInitials(employee)}
                 </Avatar>
-                <Typography variant="caption" fontWeight={600} noWrap sx={{ display: 'block', maxWidth: '100%' }}>
+                <Typography variant="body2" fontWeight={600} noWrap sx={{ display: 'block', maxWidth: '100%' }}>
                   {getFullName(employee)}
                 </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: 10 }}>
+                <Typography variant="caption" color="text.secondary">
                   Barbero
                 </Typography>
               </Paper>

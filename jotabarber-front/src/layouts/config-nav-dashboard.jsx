@@ -74,22 +74,12 @@ export const navData = [
         icon: ICONS.lock,
       },
       {
-        title: 'Permisos',
-        path: paths.dashboard.maintenance.permissions,
-        icon: ICONS.parameter,
-      },
-      {
-        title: 'Menús',
-        path: paths.dashboard.maintenance.menus,
-        icon: ICONS.menuItem,
-      },
-      {
         title: 'Sedes',
         path: paths.dashboard.maintenance.branches.root,
         icon: ICONS.tour,
       },
       {
-        title: 'Empleados',
+        title: 'Colaboradores',
         path: paths.dashboard.maintenance.employees.root,
         icon: ICONS.barbero,
       },

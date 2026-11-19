@@ -31,7 +31,7 @@ export function UserNewEditForm({ currentUser }) {
 
   const { roles, fetchRoles, loading: loadingRoles } = useRoles();
   const { branches, fetchBranches, loading: loadingBranches } = useBranches();
-  const { createUser, updateUser, assignUser } = useUsers();
+  const { createUser, updateUser } = useUsers();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -39,7 +39,7 @@ export function UserNewEditForm({ currentUser }) {
     email: '',
     password: '',
     role_id: null,
-    branch_id: null,
+    branch_ids: [],
     active: true,
   });
 
@@ -55,14 +55,14 @@ export function UserNewEditForm({ currentUser }) {
           email: currentUser.email || '',
           password: '',
           role_id: currentUser.role_ids?.[0] || null,
-          branch_id: currentUser.branch_id || null,
+          branch_ids: (currentUser.branches||[]).map((b)=>b.id),
           active: currentUser.active ?? true,
         });
       } else {
         // Por defecto, establecer la sucursal seleccionada
         const selectedBranchId = localStorage.getItem('selectedBranchId');
         if (selectedBranchId) {
-          setFormData((prev) => ({ ...prev, branch_id: parseInt(selectedBranchId, 10) }));
+          setFormData((prev) => ({ ...prev, branch_ids: [parseInt(selectedBranchId, 10)] }));
         }
       }
       setLoading(false);
@@ -92,29 +92,15 @@ export function UserNewEditForm({ currentUser }) {
         ...formData,
         role_ids: formData.role_id ? [formData.role_id] : [],
       };
-      // No enviar branch_id al crear/update (el backend usa la sucursal del contexto)
+      // branch_ids indica las sedes; el backend valida el acceso
       delete dataToSend.branch_id;
+      // username no se puede cambiar al editar
+      if (currentUser) delete dataToSend.username;
 
       if (currentUser) {
         response = await updateUser(currentUser.id, dataToSend);
-        // Si la sucursal cambió, reasignar
-        if (currentUser.branch_id !== formData.branch_id && formData.branch_id) {
-          await assignUser({
-            user_id: currentUser.id,
-            role_ids: dataToSend.role_ids,
-            active: true,
-          });
-        }
       } else {
         response = await createUser(dataToSend);
-        // Asignar a la sucursal seleccionada
-        if (formData.branch_id && response.data?.data?.id) {
-          await assignUser({
-            user_id: response.data.data.id,
-            role_ids: dataToSend.role_ids,
-            active: true,
-          });
-        }
       }
 
       // Verificar si la respuesta tiene success: true
@@ -241,13 +227,15 @@ export function UserNewEditForm({ currentUser }) {
 
               <Box>
                 <FormControl fullWidth>
-                  <InputLabel>Seleccionar Sucursal</InputLabel>
+                  <InputLabel>Seleccionar Sucursales</InputLabel>
                   <Select
-                    value={formData.branch_id || ''}
+                    value={formData.branch_ids}
+                    multiple
                     size="small"
-                    label="Seleccionar Sucursal"
-                    onChange={(e) => setFormData({ ...formData, branch_id: e.target.value })}
+                    label="Seleccionar Sucursales"
+                    onChange={(e) => setFormData({ ...formData, branch_ids: e.target.value })}
                     required
+                    renderValue={(selected) => selected.map((id) => ((branches.find((x) => x.id === id)) || {}).name || id).join(', ')}
                   >
                     {Array.isArray(branches) && branches.map((branch) => (
                       <MenuItem key={branch.id} value={branch.id}>

@@ -23,6 +23,7 @@ export function ProductNewEditForm({ currentProduct, onSuccess }) {
     unit: currentProduct?.unit || 'UND',
     usage_type: currentProduct?.usage_type || 'SALE',
     price: currentProduct?.price || '',
+    cost: currentProduct?.cost || '',
     stock: currentProduct?.stock || 0,
     description: currentProduct?.description || '',
     active: currentProduct?.active ?? true,
@@ -134,17 +135,26 @@ export function ProductNewEditForm({ currentProduct, onSuccess }) {
               <MenuItem value="BOTH">Ambos</MenuItem>
             </TextField>
           </Grid>
-          <Grid xs={12} md={6}>
+          <Grid xs={12} md={4}>
             <TextField
               fullWidth
-              label="Precio"
+              label="Precio de compra"
+              type="number"
+              value={formData.cost}
+              onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
+            />
+          </Grid>
+          <Grid xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="Precio de venta"
               type="number"
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               required
             />
           </Grid>
-          <Grid xs={12} md={6}>
+          <Grid xs={12} md={4}>
             <TextField
               fullWidth
               label="Stock"

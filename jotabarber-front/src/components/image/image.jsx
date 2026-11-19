@@ -45,6 +45,7 @@ export const Image = forwardRef(
       delayTime,
       threshold,
       beforeLoad,
+      onLoad,
       delayMethod,
       placeholder,
       wrapperProps,
@@ -68,6 +69,7 @@ export const Image = forwardRef(
         delayTime={delayTime}
         threshold={threshold}
         beforeLoad={beforeLoad}
+        onLoad={onLoad}
         delayMethod={delayMethod}
         placeholder={placeholder}
         wrapperProps={wrapperProps}

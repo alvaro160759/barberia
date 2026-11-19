@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
+import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -26,11 +27,7 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
   return (
     <>
       <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
-        <TableCell padding="checkbox">
-          <Checkbox id={row.id} checked={selected} onClick={onSelectRow} />
-        </TableCell>
-
-        <TableCell>
+        <TableCell sx={{ width: 220 }}>
           <Stack spacing={2} direction="row" alignItems="center">
             <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
               <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
@@ -47,7 +44,21 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.role_name || '-'}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.branch_name || '-'}</TableCell>
+        <TableCell>
+          <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+            {(row.branches || []).length > 0
+              ? row.branches.map((b) => (
+                  <Chip
+                    key={b.id}
+                    label={b.name}
+                    size="small"
+                    variant={b.active ? 'filled' : 'outlined'}
+                    color={b.active ? 'primary' : 'default'}
+                  />
+                ))
+              : '-'}
+          </Stack>
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.email}</TableCell>
 
@@ -62,42 +73,29 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
 
         <TableCell>
           <Stack direction="row" alignItems="center">
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
+            <IconButton
+              onClick={() => {
+                confirm.onTrue();
+                popover.onClose();
+              }}
+              sx={{ color: 'error.main' }}
+            >
+              <Iconify icon="solar:trash-bin-trash-bold" />
+
+            </IconButton>
+
+            <IconButton
+              onClick={() => {
+                onEditRow();
+                popover.onClose();
+              }}
+            >
+              <Iconify icon="solar:pen-bold" />
             </IconButton>
           </Stack>
         </TableCell>
+
       </TableRow>
-
-      <CustomPopover
-        open={popover.open}
-        anchorEl={popover.anchorEl}
-        onClose={popover.onClose}
-        slotProps={{ arrow: { placement: 'right-top' } }}
-      >
-        <MenuList>
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Eliminar
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="solar:pen-bold" />
-            Editar
-          </MenuItem>
-        </MenuList>
-      </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -15,10 +17,13 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useProducts } from 'src/hooks/use-products';
 import { useBranches } from 'src/hooks/use-branches';
+import { useSetState } from 'src/hooks/use-set-state';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Iconify } from 'src/components/iconify';
+import { Label } from 'src/components/label';
+import { varAlpha } from 'src/theme/styles';
 import { Scrollbar } from 'src/components/scrollbar';
 import { SplashScreen } from 'src/components/loading-screen';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -36,6 +41,14 @@ import {
 
 import { ProductTableRow } from './product-table-row';
 import { ProductTableToolbar } from './product-table-toolbar';
+import { StockEntryDialog } from './stock-entry-dialog';
+import { InventoryMovementsDialog } from './inventory-movements-dialog';
+
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'Todos' },
+  { value: '1', label: 'Activos' },
+  { value: '0', label: 'Inactivos' },
+];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Nombre' },
@@ -56,13 +69,12 @@ export function ProductListView() {
   const { branches, fetchBranches } = useBranches();
   const [tableData, setTableData] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState('');
+  const filters = useSetState({ name: '', status: 'all' });
+  const [stockProduct, setStockProduct] = useState(null);
+  const [movementsOpen, setMovementsOpen] = useState(false);
 
   useEffect(() => {
-    const loadData = async () => {
-      await fetchBranches();
-      await fetchProducts();
-    };
-    loadData();
+    Promise.all([fetchBranches(), fetchProducts({ per_page: 100 })]);
   }, [fetchProducts, fetchBranches]);
 
   useEffect(() => {
@@ -71,7 +83,7 @@ export function ProductListView() {
 
   const handleBranchChange = (branchId) => {
     setSelectedBranch(branchId);
-    fetchProducts(branchId ? { branch_id: branchId } : undefined);
+    fetchProducts({ ...(branchId ? { branch_id: branchId } : {}), per_page: 100 });
   };
 
   const handleDeleteRow = async (id) => {
@@ -82,7 +94,22 @@ export function ProductListView() {
     }
   };
 
-  const dataFiltered = tableData;
+  const handleFilterStatus = (event, newValue) => {
+    table.onResetPage();
+    filters.setState({ status: newValue });
+  };
+
+  const dataFiltered = tableData.filter((row) => {
+    const q = filters.state.name.trim().toLowerCase();
+    const matchesSearch =
+      !q ||
+      [row.name, row.category_name, row.sku, row.barcode]
+        .filter(Boolean)
+        .some((v) => String(v).toLowerCase().includes(q));
+    const matchesStatus =
+      filters.state.status === 'all' || String(row.active) === filters.state.status;
+    return matchesSearch && matchesStatus;
+  });
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
   const notFound = !dataFiltered.length;
 
@@ -97,13 +124,22 @@ export function ProductListView() {
             { name: 'Productos' },
           ]}
           action={
-            <Button
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-              onClick={() => router.push(paths.dashboard.maintenance.products.new)}
-            >
-              Nuevo Producto
-            </Button>
+            <Stack direction="row" spacing={1}>
+              <Button
+                variant="outlined"
+                startIcon={<Iconify icon="mingcute:inventory-line" />}
+                onClick={() => setMovementsOpen(true)}
+              >
+                Movimientos
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+                onClick={() => router.push(paths.dashboard.maintenance.products.new)}
+              >
+                Nuevo Producto
+              </Button>
+            </Stack>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
@@ -112,10 +148,47 @@ export function ProductListView() {
           <SplashScreen />
         ) : (
           <Card>
-            <ProductTableToolbar 
+            <Tabs
+              value={filters.state.status}
+              onChange={handleFilterStatus}
+              sx={{
+                px: 2.5,
+                boxShadow: (theme) =>
+                  `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
+              }}
+            >
+              {STATUS_OPTIONS.map((tab) => (
+                <Tab
+                  key={tab.value}
+                  iconPosition="end"
+                  value={tab.value}
+                  label={tab.label}
+                  icon={
+                    <Label
+                      variant={
+                        ((tab.value === 'all' || tab.value === filters.state.status) && 'filled') ||
+                        'soft'
+                      }
+                      color={
+                        (tab.value === '1' && 'success') ||
+                        (tab.value === '0' && 'error') ||
+                        'default'
+                      }
+                    >
+                      {tab.value === 'all'
+                        ? tableData.length
+                        : tableData.filter((p) => String(p.active) === tab.value).length}
+                    </Label>
+                  }
+                />
+              ))}
+            </Tabs>
+            <ProductTableToolbar
               onBranchChange={handleBranchChange}
               branches={branches}
               selectedBranch={selectedBranch}
+              filters={filters}
+              onResetPage={table.onResetPage}
             />
 
             <Box sx={{ position: 'relative' }}>
@@ -164,6 +237,7 @@ export function ProductListView() {
                           onEditRow={() => router.push(paths.dashboard.maintenance.products.edit(row.id))}
                           onSelectRow={() => table.onSelectRow(row.id)}
                           onDeleteRow={() => handleDeleteRow(row.id)}
+                          onStockEntry={() => setStockProduct(row)}
                         />
                       ))}
 
@@ -190,6 +264,19 @@ export function ProductListView() {
           </Card>
         )}
       </DashboardContent>
+
+      <StockEntryDialog
+        open={!!stockProduct}
+        onClose={() => setStockProduct(null)}
+        product={stockProduct}
+        onSaved={() => fetchProducts({ ...(selectedBranch ? { branch_id: selectedBranch } : {}), per_page: 100 })}
+      />
+
+      <InventoryMovementsDialog
+        open={movementsOpen}
+        onClose={() => setMovementsOpen(false)}
+        products={tableData}
+      />
 
       <ConfirmDialog
         open={confirm.value}

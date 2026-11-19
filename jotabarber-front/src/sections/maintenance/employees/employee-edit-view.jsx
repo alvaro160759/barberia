@@ -36,11 +36,11 @@ export function EmployeeEditView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Editar Barbero"
+        heading="Editar colaborador"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Mantenimiento', href: paths.dashboard.maintenance.root },
-          { name: 'Barberos', href: paths.dashboard.maintenance.employees.root },
+          { name: 'Colaboradores', href: paths.dashboard.maintenance.employees.root },
           { name: 'Editar' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

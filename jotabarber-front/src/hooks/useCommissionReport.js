@@ -6,36 +6,50 @@ import axios from 'src/utils/axios';
 
 const COMMISSION_REPORT_API = '/api/reports/by-barber';
 
-function getRange(period, date) {
+function formatDateLocal(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getRange(period, { date, monthValue, yearValue, rangeFrom, rangeTo }) {
+  if (period === 'custom') {
+    return [rangeFrom || date, rangeTo || date];
+  }
+  if (period === 'month' && monthValue) {
+    const [y, m] = monthValue.split('-').map(Number);
+    return [formatDateLocal(new Date(y, m - 1, 1)), formatDateLocal(new Date(y, m, 0))];
+  }
+  if (period === 'year' && yearValue) {
+    const y = parseInt(yearValue, 10);
+    if (!Number.isNaN(y)) {
+      return [formatDateLocal(new Date(y, 0, 1)), formatDateLocal(new Date(y, 11, 31))];
+    }
+  }
   const [year, month, day] = date.split('-').map(Number);
   const d = new Date(year, month - 1, day);
-  const formatDate = (d) => {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
   switch (period) {
-    case 'day':
-      return [formatDate(d), formatDate(d)];
-    case 'week':
+    case 'week': {
       const dayOfWeek = d.getDay();
       const monday = new Date(d);
       monday.setDate(d.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
       const sunday = new Date(monday);
       sunday.setDate(monday.getDate() + 6);
-      return [formatDate(monday), formatDate(sunday)];
-    case 'month':
+      return [formatDateLocal(monday), formatDateLocal(sunday)];
+    }
+    case 'month': {
       const firstDay = new Date(d.getFullYear(), d.getMonth(), 1);
       const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0);
-      return [formatDate(firstDay), formatDate(lastDay)];
-    case 'year':
+      return [formatDateLocal(firstDay), formatDateLocal(lastDay)];
+    }
+    case 'year': {
       const yearStart = new Date(d.getFullYear(), 0, 1);
       const yearEnd = new Date(d.getFullYear(), 11, 31);
-      return [formatDate(yearStart), formatDate(yearEnd)];
+      return [formatDateLocal(yearStart), formatDateLocal(yearEnd)];
+    }
     default:
-      return [formatDate(d), formatDate(d)];
+      return [formatDateLocal(d), formatDateLocal(d)];
   }
 }
 
@@ -48,6 +62,19 @@ export function useCommissionReport() {
     return `${year}-${month}-${day}`;
   });
   const [period, setPeriod] = useState('day');
+  const [monthValue, setMonthValue] = useState(() => {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  });
+  const [yearValue, setYearValue] = useState(() => String(new Date().getFullYear()));
+  const [rangeFrom, setRangeFrom] = useState(() => {
+    const today = new Date();
+    return formatDateLocal(today);
+  });
+  const [rangeTo, setRangeTo] = useState(() => {
+    const today = new Date();
+    return formatDateLocal(today);
+  });
   const [barberId, setBarberId] = useState('');
   const [serviceId, setServiceId] = useState('');
   const [branchId, setBranchId] = useState('');
@@ -95,7 +122,7 @@ export function useCommissionReport() {
   const fetchReport = useCallback(async (barberOverride) => {
     setLoading(true);
     try {
-      const [from, to] = getRange(period, date);
+      const [from, to] = getRange(period, { date, monthValue, yearValue, rangeFrom, rangeTo });
       const params = { from, to };
       const activeBarberId = barberOverride ?? barberId;
       const activeServiceId = serviceId;
@@ -116,7 +143,40 @@ export function useCommissionReport() {
     } finally {
       setLoading(false);
     }
-  }, [period, date, barberId, serviceId, branchId]);
+  }, [period, date, monthValue, yearValue, rangeFrom, rangeTo, barberId, serviceId, branchId]);
+
+  const [from, to] = getRange(period, { date, monthValue, yearValue, rangeFrom, rangeTo });
+  const WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  const formatRangeDate = (iso) => {
+    const [y, m, d] = iso.split('-');
+    return `${d}/${m}/${y}`;
+  };
+  const weekdayOf = (iso) => {
+    const [y, m, d] = iso.split('-').map(Number);
+    return WEEKDAYS[new Date(y, m - 1, d).getDay()];
+  };
+  const monthNameOf = (iso) => {
+    const [y, m] = iso.split('-').map(Number);
+    return `${MONTHS[m - 1]} ${y}`;
+  };
+  let dateRangeLabel;
+  switch (period) {
+    case 'day':
+      dateRangeLabel = `${weekdayOf(from)} ${formatRangeDate(from)}`;
+      break;
+    case 'week':
+      dateRangeLabel = `${weekdayOf(from)} ${formatRangeDate(from)} al ${weekdayOf(to)} ${formatRangeDate(to)}`;
+      break;
+    case 'month':
+      dateRangeLabel = `Mes de ${monthNameOf(from)}`;
+      break;
+    case 'year':
+      dateRangeLabel = `Año ${from.slice(0, 4)}`;
+      break;
+    default:
+      dateRangeLabel = `Del ${formatRangeDate(from)} al ${formatRangeDate(to)}`;
+  }
 
   const handleViewDetail = useCallback((barber) => {
     setSelectedBarber(barber);
@@ -146,6 +206,11 @@ export function useCommissionReport() {
     // Estado
     date,
     period,
+    monthValue,
+    yearValue,
+    rangeFrom,
+    rangeTo,
+    dateRangeLabel,
     barberId,
     serviceId,
     branchId,
@@ -162,6 +227,10 @@ export function useCommissionReport() {
     // Setters
     setDate,
     setPeriod,
+    setMonthValue,
+    setYearValue,
+    setRangeFrom,
+    setRangeTo,
     setBarberId,
     setServiceId,
     setBranchId,
